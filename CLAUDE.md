@@ -47,10 +47,10 @@ pnpm db:studio        # Open Drizzle Studio
 ```
 /app                        → Next.js pages and API routes
   /api/realms/create        → POST: Create a Realm + community
-  /api/realms/join          → POST: Join a community via invite (NOT YET BUILT)
+  /api/realms/join          → POST: Join a community via invite
   /create                   → Community creation form
   /community/[id]           → Community dashboard
-  /invite/[code]            → Invite landing page (NOT YET BUILT)
+  /invite/[code]            → Invite landing page + join flow
 /components/ui/warcraftcn   → warcraftcn base components (Card, Button, Input, Badge, Dropdown, Skeleton)
 /components/auth            → PrivyProviderWrapper, LoginButton
 /lib/governance             → GovernanceProvider interface + RealmsGovernance skeleton
@@ -168,21 +168,25 @@ SERVER_WALLET_PATH=./server-wallet.json    # Devnet server keypair (gitignored)
 - [x] **M2: Privy Auth + Embedded Wallets** — PrivyProviderWrapper, use-auth hook, LoginButton, verify-auth server helper, layout + landing page
 - [x] **M3: GovernanceProvider Interface + DB Schema** — Full types.ts interface, RealmsGovernance skeleton, Solana connection singleton, Drizzle schema (5 tables), drizzle.config.ts
 - [x] **M4: Realm Creation API + UI** — POST /api/realms/create (mint creation, createRealm, depositGoverningTokens, createGovernance, createNativeTreasury, Postgres storage), /create form page, /community/[id] dashboard
-- [ ] **M5: Member Join via Invite Link** — NOT STARTED. Needs: /invite/[code] page, join-button client component, POST /api/realms/join (ATA creation, token mint, depositGoverningTokens, Postgres member record)
+- [x] **M5: Member Join via Invite Link** — /invite/[code] server page, JoinButton client component, POST /api/realms/join (ATA creation, community token mint, depositGoverningTokens, duplicate check, Postgres member record + transaction log)
+
+**Phase 1 complete.** All 5 milestones done.
 
 ### Pre-requisites Still Needed (User action)
 
-Before M4/M5 can be tested end-to-end:
+Before testing end-to-end:
 1. Configure Privy app — set `NEXT_PUBLIC_PRIVY_APP_ID` and `PRIVY_APP_SECRET` in `.env.local`
 2. Create Neon database — set `DATABASE_URL` in `.env.local`, then run `pnpm db:push`
 3. Get a devnet RPC — set `NEXT_PUBLIC_SOLANA_RPC_URL` (Helius free tier recommended)
 4. Generate server keypair — `solana-keygen new -o server-wallet.json`, fund with `solana airdrop 5`
 
-### Next Session: Start with M5
+### Next: Phase 2 — Proposals + Voting + Treasury
 
-Build the member join flow:
-1. Create `/app/invite/[code]/page.tsx` — Server component: look up community by invite code, show name/description/member count
-2. Create `/app/invite/[code]/join-button.tsx` — Client component: login if needed, POST to join API
-3. Create `/app/api/realms/join/route.ts` — Verify auth, check not already member, create ATA, mint 1 community token, deposit governing tokens, store member in Postgres
-
-After M5, move to Phase 2: Proposals + Voting + Treasury View.
+Phase 2 milestones (not yet planned in detail):
+1. Treasury view — show War Chest balance (USDC on devnet), devnet airdrop button
+2. Proposal creation — form + POST /api/proposals/create (CreateProposal + InsertTransaction + SignOffProposal instructions)
+3. Voting — VotePanel component + POST /api/proposals/vote (CastVote instruction)
+4. Vote finalization — FinalizeVote instruction + result display
+5. Manual execution — "Execute Order" button (ExecuteTransaction instruction)
+6. Threaded discussion — comments with reactions (Postgres-only, no on-chain chat)
+7. AI Keeper — Vercel AI SDK agent for discussion summaries
