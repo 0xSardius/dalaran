@@ -90,7 +90,7 @@ export default function CreateCommunityPage() {
                 required
               />
               <p className="text-xs text-muted-foreground">
-                2-32 characters. This will be your on-chain Realm name.
+                2-32 characters. Choose something your members will recognize.
               </p>
             </div>
 
@@ -120,12 +120,12 @@ export default function CreateCommunityPage() {
               disabled={loading || name.length < 2}
               className="w-full"
             >
-              {loading ? "Forging Realm..." : "Create Community"}
+              {loading ? "Setting up your council..." : "Create Community"}
             </Button>
 
             {loading && (
               <p className="text-xs text-center text-muted-foreground">
-                Creating your Realm on Solana devnet. This may take a moment...
+                Setting up your treasury and governance. This may take a moment...
               </p>
             )}
           </form>

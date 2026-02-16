@@ -4,10 +4,17 @@ import { getDatabase, schema } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/warcraftcn/card";
 import { Badge } from "@/components/ui/warcraftcn/badge";
 import { CopyInviteLink } from "./copy-invite-link";
+import { TechDetails } from "./tech-details";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
+
+const ROLE_LABELS: Record<string, string> = {
+  archmage: "Archmage",
+  councilor: "Councilor",
+  citizen: "Citizen",
+};
 
 export default async function CommunityDashboardPage({ params }: Props) {
   const { id } = await params;
@@ -69,10 +76,10 @@ export default async function CommunityDashboardPage({ params }: Props) {
                   className="flex items-center justify-between"
                 >
                   <span className="text-sm text-parchment">
-                    {member.email || member.solanaAddress.slice(0, 8) + "..."}
+                    {member.email || "Community member"}
                   </span>
                   <Badge>
-                    {member.role}
+                    {ROLE_LABELS[member.role] || member.role}
                   </Badge>
                 </div>
               ))}
@@ -80,40 +87,17 @@ export default async function CommunityDashboardPage({ params }: Props) {
           </CardContent>
         </Card>
 
-        {/* Realm Info (dev) */}
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="fantasy text-lg text-gold">
-              Realm Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 text-sm font-mono">
-              <InfoRow label="Realm" value={community.realmPubkey} />
-              <InfoRow label="Community Mint" value={community.communityMint} />
-              <InfoRow label="Council Mint" value={community.councilMint} />
-              <InfoRow label="Governance" value={community.governancePubkey} />
-              <InfoRow label="Treasury" value={community.treasuryPubkey} />
-            </div>
-          </CardContent>
-        </Card>
+        {/* Technical details — collapsed by default, for judges/devs */}
+        <div className="md:col-span-2">
+          <TechDetails
+            realmPubkey={community.realmPubkey}
+            communityMint={community.communityMint}
+            councilMint={community.councilMint}
+            governancePubkey={community.governancePubkey}
+            treasuryPubkey={community.treasuryPubkey}
+          />
+        </div>
       </div>
-    </div>
-  );
-}
-
-function InfoRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | null;
-}) {
-  if (!value) return null;
-  return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-      <span className="text-muted-foreground w-36 shrink-0">{label}:</span>
-      <span className="text-parchment break-all">{value}</span>
     </div>
   );
 }

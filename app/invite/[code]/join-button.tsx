@@ -79,7 +79,7 @@ export function JoinButton({ communityId, communityName }: JoinButtonProps) {
 
       {loading && (
         <p className="text-xs text-center text-muted-foreground">
-          Setting up your membership on Solana devnet...
+          Setting up your membership. This may take a moment...
         </p>
       )}
 

@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     if (!authUser.solanaAddress) {
       return NextResponse.json(
-        { error: "No Solana wallet found. Please re-login." },
+        { error: "Account setup incomplete. Please log out and log back in." },
         { status: 400 }
       );
     }

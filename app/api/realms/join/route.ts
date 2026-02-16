@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     if (!authUser.solanaAddress) {
       return NextResponse.json(
-        { error: "No Solana wallet found. Please re-login." },
+        { error: "Account setup incomplete. Please log out and log back in." },
         { status: 400 }
       );
     }
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     if (!community.realmPubkey || !community.communityMint) {
       return NextResponse.json(
-        { error: "Community is not fully set up on-chain" },
+        { error: "This community is still being set up. Please try again shortly." },
         { status: 400 }
       );
     }
