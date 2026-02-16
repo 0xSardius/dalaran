@@ -1,22 +1,47 @@
 @import "tailwindcss";
+@import "../components/ui/warcraftcn/styles/warcraft.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #1A1A2E;
+  --foreground: #E8D5B0;
+  --gold: #C9A959;
+  --gold-light: #D4B96E;
+  --gold-dark: #A88B3D;
+  --parchment: #E8D5B0;
+  --parchment-dark: #C9B896;
+  --dark: #1A1A2E;
+  --dark-surface: #252542;
+  --dark-lighter: #2E2E4A;
+  --destructive: #9B2C2C;
+  --muted: #6B6B8D;
+  --muted-foreground: #9090AD;
+  --border: #3A3A5C;
+  --ring: #C9A959;
+  --radius: 0.5rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
+  --color-parchment: var(--parchment);
+  --color-parchment-dark: var(--parchment-dark);
+  --color-dark: var(--dark);
+  --color-dark-surface: var(--dark-surface);
+  --color-dark-lighter: var(--dark-lighter);
+  --color-destructive: var(--destructive);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 body {

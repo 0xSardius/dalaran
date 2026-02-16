@@ -12,15 +12,22 @@ Dalaran is a collective treasury and governance app for mid-size communities (25
 
 ## Tech Stack
 
-- **Framework:** Next.js 15 (App Router), TypeScript, Tailwind CSS
+- **Framework:** Next.js 15 (App Router), TypeScript, Tailwind CSS v4
 - **Package Manager:** pnpm
 - **UI Components:** warcraftcn (install via `pnpm dlx shadcn@latest add https://warcraftcn.com/r/[component].json`)
-- **Auth:** Privy SDK — email/social login with embedded Solana wallets
-- **Blockchain:** Solana devnet, SPL Governance (Realms), USDC (SPL Token)
+- **Auth:** Privy SDK — email-only login with embedded Solana wallets
+- **Blockchain:** Solana devnet, SPL Governance via `governance-idl-sdk` (Mythic Project's maintained IDL-based SDK)
 - **Database:** PostgreSQL (Neon) with Drizzle ORM
 - **AI:** Vercel AI SDK + Claude API ("The Keeper" — discussion summaries)
 - **Backend:** Vercel Serverless Functions
 - **Testing:** Vitest
+
+## Available Skills / MCP Tools
+
+This project has access to specialized skills that should be used when relevant:
+
+- **Solana skills** — Use for Solana-specific operations, devnet interactions, program deployment
+- **Vercel AI SDK skills** — Use for building AI features (The Keeper agent, discussion summaries)
 
 ## Commands
 
@@ -32,28 +39,51 @@ pnpm test             # Run all tests (Vitest)
 pnpm test -- [file]   # Run a single test file
 pnpm db:push          # Push Drizzle schema to Neon
 pnpm db:generate      # Generate Drizzle migrations
+pnpm db:studio        # Open Drizzle Studio
 ```
 
 ## Project Structure
 
 ```
 /app                        → Next.js pages and API routes
+  /api/realms/create        → POST: Create a Realm + community
+  /api/realms/join          → POST: Join a community via invite (NOT YET BUILT)
+  /create                   → Community creation form
+  /community/[id]           → Community dashboard
+  /invite/[code]            → Invite landing page (NOT YET BUILT)
 /components/ui/warcraftcn   → warcraftcn base components (Card, Button, Input, Badge, Dropdown, Skeleton)
-/components                 → Custom shared components (ProposalCard, WarChest, VotePanel, etc.)
-/lib/governance             → GovernanceProvider interface + RealmsGovernance implementation
-/lib/realms                 → SPL Governance SDK wrappers (create-realm, cast-vote, etc.)
-/lib/privy                  → Privy auth + embedded wallet config
-/lib/ai                     → Vercel AI SDK agent ("The Keeper")
-/lib/db                     → Drizzle ORM schema and queries
-/hooks                      → Custom React hooks
+/components/auth            → PrivyProviderWrapper, LoginButton
+/lib/governance             → GovernanceProvider interface + RealmsGovernance skeleton
+/lib/solana                 → Solana connection singleton, server wallet helper
+/lib/privy                  → Privy config, server-side auth verification
+/lib/db                     → Drizzle ORM schema (5 tables) and client
+/hooks                      → Custom React hooks (use-auth)
 /scripts                    → Dev scripts (devnet airdrop, seed data)
 ```
 
 ## Architecture
 
+### Server-Side Transaction Signing (Devnet Tradeoff)
+
+A server keypair (`server-wallet.json`, gitignored) handles all on-chain operations for the hackathon:
+- Creates mints (as mint authority)
+- Creates Realms (as payer)
+- Mints governance tokens to new members
+- Deposits governance tokens
+
+The user's Privy embedded wallet address is set as the governance authority on token deposits, but doesn't sign transactions in Phase 1. This is centralized but fast to build. In production, users would sign with their own embedded wallets via Privy.
+
 ### GovernanceProvider Interface
 
 The central abstraction layer in `/lib/governance/types.ts`. All governance operations (createCommunity, addMember, createProposal, castVote, finalizeVote, executeProposal, getTreasuryBalance) go through this interface. For hackathon, only `RealmsGovernance` (SPL Governance) is implemented. A `SimpleGovernance` (Postgres-backed) implementation is planned for v2.
+
+### `governance-idl-sdk` (NOT `@solana/spl-governance`)
+
+We use Mythic Project's maintained IDL-based SDK instead of the archived `@solana/spl-governance`. Key class: `SplGovernance` from `governance-idl-sdk`. Default program ID: `GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw`.
+
+The SDK's GovernanceConfig uses Anchor IDL enum format:
+- VoteThreshold: `{ yesVotePercentage: [60] }`, `{ quorumPercentage: [60] }`, `{ disabled: {} }`
+- VoteTipping: `{ strict: {} }`, `{ early: {} }`, `{ disabled: {} }`
 
 ### Realms / SPL Governance Mapping
 
@@ -70,8 +100,9 @@ The central abstraction layer in `/lib/governance/types.ts`. All governance oper
 ### Governance Instruction Flow
 
 ```
-CreateRealm → DepositGoverningTokens → CreateProposal → InsertTransaction →
-SignOffProposal → CastVote → FinalizeVote → ExecuteTransaction (manual button for hackathon)
+CreateRealm → DepositGoverningTokens → CreateGovernance → CreateNativeTreasury →
+CreateProposal → InsertTransaction → SignOffProposal → CastVote →
+FinalizeVote → ExecuteTransaction (manual button for hackathon)
 ```
 
 ### Data Split: Onchain vs Off-chain
@@ -85,10 +116,10 @@ SignOffProposal → CastVote → FinalizeVote → ExecuteTransaction (manual but
 - `/` — Landing page
 - `/create` — Create a community (Realm)
 - `/invite/[code]` — Join a community via invite link
-- `/[community]` — Community dashboard (treasury + proposals overview)
-- `/[community]/treasury` — War chest view
-- `/[community]/proposals` — Proposals list
-- `/[community]/proposals/new` — Create a proposal
+- `/community/[id]` — Community dashboard (treasury + proposals overview)
+- `/community/[id]/treasury` — War chest view (NOT YET BUILT)
+- `/community/[id]/proposals` — Proposals list (NOT YET BUILT)
+- `/community/[id]/proposals/new` — Create a proposal (NOT YET BUILT)
 
 ## Hackathon Scope
 
@@ -101,7 +132,7 @@ SignOffProposal → CastVote → FinalizeVote → ExecuteTransaction (manual but
 ## Design Conventions
 
 - **Zero crypto terminology in UI.** Dollar amounts only. No wallet addresses, gas fees, token symbols, or blockchain jargon.
-- **Color palette:** Golds `#C9A959`, parchment `#E8D5B0`, dark `#1A1A2E`.
+- **Color palette:** Golds `#C9A959`, parchment `#E8D5B0`, dark `#1A1A2E`, dark-surface `#252542`.
 - **Reactions:** ⚔️ 🛡️ 🤔 ❤️ (stored as jsonb).
 - **Roles:** Archmage (admin/organizer), Councilor (power user), Citizen (member).
 - **AI summaries** labeled "Keeper's Summary" and clearly marked as AI-generated. The Keeper never takes sides or votes.
@@ -116,14 +147,42 @@ DATABASE_URL=                              # Neon Postgres
 ANTHROPIC_API_KEY=
 NEXT_PUBLIC_SOLANA_RPC_URL=                # Helius or Quicknode devnet
 NEXT_PUBLIC_SOLANA_NETWORK=devnet
-SPL_GOVERNANCE_PROGRAM_ID=GovER5Lthms3bLBqWub97yVRs6jmSt4LKkRAJuUFVq4e
+SPL_GOVERNANCE_PROGRAM_ID=GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw
+SERVER_WALLET_PATH=./server-wallet.json    # Devnet server keypair (gitignored)
 ```
 
 ## Key Dependencies
 
-- `@solana/spl-governance` — SPL Governance SDK
-- `@solana/spl-token` — SPL Token operations (USDC)
+- `governance-idl-sdk` — SPL Governance IDL-based SDK (Mythic Project)
+- `@solana/spl-token` — SPL Token operations (USDC, governance tokens)
 - `@solana/web3.js` — Solana blockchain interactions
 - `@privy-io/react-auth` + `@privy-io/server-auth` — Auth + embedded wallets
-- `ai` (Vercel AI SDK) — AI agent framework
 - `drizzle-orm` + `@neondatabase/serverless` — Database ORM
+- `nanoid` — Short ID generation (invite codes, record IDs)
+
+## Session Continuity / Progress Tracker
+
+### Phase 1: Foundation + Realms (Days 1-3)
+
+- [x] **M1: Infrastructure Setup** — Dependencies, warcraftcn components, Dalaran theme, next.config webpack externals, directory structure
+- [x] **M2: Privy Auth + Embedded Wallets** — PrivyProviderWrapper, use-auth hook, LoginButton, verify-auth server helper, layout + landing page
+- [x] **M3: GovernanceProvider Interface + DB Schema** — Full types.ts interface, RealmsGovernance skeleton, Solana connection singleton, Drizzle schema (5 tables), drizzle.config.ts
+- [x] **M4: Realm Creation API + UI** — POST /api/realms/create (mint creation, createRealm, depositGoverningTokens, createGovernance, createNativeTreasury, Postgres storage), /create form page, /community/[id] dashboard
+- [ ] **M5: Member Join via Invite Link** — NOT STARTED. Needs: /invite/[code] page, join-button client component, POST /api/realms/join (ATA creation, token mint, depositGoverningTokens, Postgres member record)
+
+### Pre-requisites Still Needed (User action)
+
+Before M4/M5 can be tested end-to-end:
+1. Configure Privy app — set `NEXT_PUBLIC_PRIVY_APP_ID` and `PRIVY_APP_SECRET` in `.env.local`
+2. Create Neon database — set `DATABASE_URL` in `.env.local`, then run `pnpm db:push`
+3. Get a devnet RPC — set `NEXT_PUBLIC_SOLANA_RPC_URL` (Helius free tier recommended)
+4. Generate server keypair — `solana-keygen new -o server-wallet.json`, fund with `solana airdrop 5`
+
+### Next Session: Start with M5
+
+Build the member join flow:
+1. Create `/app/invite/[code]/page.tsx` — Server component: look up community by invite code, show name/description/member count
+2. Create `/app/invite/[code]/join-button.tsx` — Client component: login if needed, POST to join API
+3. Create `/app/api/realms/join/route.ts` — Verify auth, check not already member, create ATA, mint 1 community token, deposit governing tokens, store member in Postgres
+
+After M5, move to Phase 2: Proposals + Voting + Treasury View.
