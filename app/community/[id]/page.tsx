@@ -1,8 +1,11 @@
 import { notFound } from "next/navigation";
-import { eq } from "drizzle-orm";
+import Link from "next/link";
+import { eq, desc, sql } from "drizzle-orm";
 import { getDatabase, schema } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/warcraftcn/card";
 import { Badge } from "@/components/ui/warcraftcn/badge";
+import { Button } from "@/components/ui/warcraftcn/button";
+import { ProposalCard } from "@/components/proposals/ProposalCard";
 import { CopyInviteLink } from "./copy-invite-link";
 import { TechDetails } from "./tech-details";
 
@@ -32,6 +35,46 @@ export default async function CommunityDashboardPage({ params }: Props) {
     where: eq(schema.members.communityId, id),
   });
 
+  // Fetch recent proposals (limit 3)
+  const recentProposals = await db
+    .select({
+      id: schema.proposals.id,
+      title: schema.proposals.title,
+      type: schema.proposals.type,
+      state: schema.proposals.state,
+      amount: schema.proposals.amount,
+      createdBy: schema.proposals.createdBy,
+      createdAt: schema.proposals.createdAt,
+      votingEndsAt: schema.proposals.votingEndsAt,
+      yesVotes:
+        sql<number>`coalesce(sum(case when ${schema.votes.choice} = 'yes' then 1 else 0 end), 0)::int`,
+      noVotes:
+        sql<number>`coalesce(sum(case when ${schema.votes.choice} = 'no' then 1 else 0 end), 0)::int`,
+      abstainVotes:
+        sql<number>`coalesce(sum(case when ${schema.votes.choice} = 'abstain' then 1 else 0 end), 0)::int`,
+    })
+    .from(schema.proposals)
+    .leftJoin(schema.votes, eq(schema.proposals.id, schema.votes.proposalId))
+    .where(eq(schema.proposals.communityId, id))
+    .groupBy(schema.proposals.id)
+    .orderBy(desc(schema.proposals.createdAt))
+    .limit(3);
+
+  // Get creator emails for proposals
+  const memberIds = [...new Set(recentProposals.map((p) => p.createdBy))];
+  const membersMap: Record<string, string> = {};
+  if (memberIds.length > 0) {
+    const memberRows = await db.query.members.findMany({
+      where: sql`${schema.members.id} IN (${sql.join(
+        memberIds.map((mid) => sql`${mid}`),
+        sql`, `
+      )})`,
+    });
+    for (const m of memberRows) {
+      membersMap[m.id] = m.email || "Community member";
+    }
+  }
+
   const inviteUrl = `/invite/${community.inviteCode}`;
 
   return (
@@ -43,9 +86,41 @@ export default async function CommunityDashboardPage({ params }: Props) {
         {community.description && (
           <p className="text-parchment-dark">{community.description}</p>
         )}
+        {/* Navigation */}
+        <div className="flex gap-4 mt-4">
+          <Link
+            href={`/community/${id}/proposals`}
+            className="text-sm text-gold hover:text-gold-light transition-colors"
+          >
+            Proposals
+          </Link>
+          <Link
+            href={`/community/${id}/treasury`}
+            className="text-sm text-gold hover:text-gold-light transition-colors"
+          >
+            Treasury
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
+        {/* Treasury Summary Card */}
+        <Link href={`/community/${id}/treasury`}>
+          <Card className="hover:border-gold/50 transition-colors cursor-pointer h-full">
+            <CardHeader>
+              <CardTitle className="fantasy text-lg text-gold">
+                War Chest
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground text-sm">
+                View your community treasury and transaction history.
+              </p>
+              <p className="text-xs text-gold mt-2">View treasury &rarr;</p>
+            </CardContent>
+          </Card>
+        </Link>
+
         {/* Invite Card */}
         <Card>
           <CardHeader>
@@ -61,15 +136,60 @@ export default async function CommunityDashboardPage({ params }: Props) {
           </CardContent>
         </Card>
 
+        {/* Recent Proposals */}
+        <div className="md:col-span-2">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="fantasy text-xl text-gold">Recent Proposals</h2>
+            <div className="flex gap-2">
+              <Link href={`/community/${id}/proposals`}>
+                <Button variant="frame">View All</Button>
+              </Link>
+              <Link href={`/community/${id}/proposals/new`}>
+                <Button>New Proposal</Button>
+              </Link>
+            </div>
+          </div>
+          {recentProposals.length === 0 ? (
+            <Card>
+              <CardContent className="py-8 text-center">
+                <p className="text-muted-foreground">
+                  No proposals yet. Create the first one!
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {recentProposals.map((p) => (
+                <ProposalCard
+                  key={p.id}
+                  id={p.id}
+                  communityId={id}
+                  title={p.title}
+                  type={p.type}
+                  state={p.state}
+                  amount={p.amount}
+                  yesVotes={p.yesVotes}
+                  noVotes={p.noVotes}
+                  abstainVotes={p.abstainVotes}
+                  totalVotes={p.yesVotes + p.noVotes + p.abstainVotes}
+                  votingEndsAt={p.votingEndsAt?.toISOString() || null}
+                  createdByEmail={membersMap[p.createdBy] || "Community member"}
+                  createdAt={p.createdAt.toISOString()}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Members Card */}
-        <Card>
+        <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle className="fantasy text-lg text-gold">
               Council Members ({membersList.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="grid gap-3 sm:grid-cols-2">
               {membersList.map((member) => (
                 <div
                   key={member.id}

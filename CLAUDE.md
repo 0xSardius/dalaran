@@ -45,18 +45,35 @@ pnpm db:studio        # Open Drizzle Studio
 ## Project Structure
 
 ```
-/app                        → Next.js pages and API routes
-  /api/realms/create        → POST: Create a Realm + community
-  /api/realms/join          → POST: Join a community via invite
-  /create                   → Community creation form
-  /community/[id]           → Community dashboard
-  /invite/[code]            → Invite landing page + join flow
+/app                                       → Next.js pages and API routes
+  /api/realms/create                       → POST: Create a Realm + community
+  /api/realms/join                         → POST: Join a community via invite
+  /api/proposals/create                    → POST: Create proposal
+  /api/proposals                           → GET: List proposals with tallies
+  /api/proposals/vote                      → POST: Cast/change vote
+  /api/proposals/[id]/tally                → GET: Vote tally + auto-finalize
+  /api/proposals/[id]/execute              → POST: Execute passed proposal
+  /api/comments                            → GET/POST: List/create comments
+  /api/comments/[id]/react                 → POST: Toggle reactions
+  /api/treasury/[communityId]              → GET: Treasury balance
+  /api/ai/summarize                        → POST: AI Keeper summary
+  /create                                  → Community creation form
+  /community/[id]                          → Community dashboard
+  /community/[id]/proposals                → Proposals list
+  /community/[id]/proposals/new            → Proposal creation form
+  /community/[id]/proposals/[proposalId]   → Proposal detail (vote + discuss + execute)
+  /community/[id]/treasury                 → Treasury / war chest page
+  /invite/[code]                           → Invite landing page + join flow
 /components/ui/warcraftcn   → warcraftcn base components (Card, Button, Input, Badge, Dropdown, Skeleton)
 /components/auth            → PrivyProviderWrapper, LoginButton
+/components/proposals       → ProposalCard, VotePanel, ExecutePanel
+/components/discussion      → CouncilThread, CommentInput, KeeperSummary
+/components/treasury        → WarChest
 /lib/governance             → GovernanceProvider interface + RealmsGovernance skeleton
 /lib/solana                 → Solana connection singleton, server wallet helper
 /lib/privy                  → Privy config, server-side auth verification
-/lib/db                     → Drizzle ORM schema (5 tables) and client
+/lib/db                     → Drizzle ORM schema (6 tables) and client
+/lib/ai                     → Keeper system prompt + summary generation
 /hooks                      → Custom React hooks (use-auth)
 /scripts                    → Dev scripts (devnet airdrop, seed data)
 ```
@@ -116,10 +133,11 @@ FinalizeVote → ExecuteTransaction (manual button for hackathon)
 - `/` — Landing page
 - `/create` — Create a community (Realm)
 - `/invite/[code]` — Join a community via invite link
-- `/community/[id]` — Community dashboard (treasury + proposals overview)
-- `/community/[id]/treasury` — War chest view (NOT YET BUILT)
-- `/community/[id]/proposals` — Proposals list (NOT YET BUILT)
-- `/community/[id]/proposals/new` — Create a proposal (NOT YET BUILT)
+- `/community/[id]` — Community dashboard (treasury + proposals overview + navigation)
+- `/community/[id]/treasury` — War chest (SOL/USDC balance + tx history)
+- `/community/[id]/proposals` — Proposals list with vote tallies
+- `/community/[id]/proposals/new` — Create a proposal (funding/policy/general)
+- `/community/[id]/proposals/[proposalId]` — Proposal detail (vote + discussion + execute + AI summary)
 
 ## Hackathon Scope
 
@@ -159,6 +177,7 @@ SERVER_WALLET_PATH=./server-wallet.json    # Devnet server keypair (gitignored)
 - `@privy-io/react-auth` + `@privy-io/server-auth` — Auth + embedded wallets
 - `drizzle-orm` + `@neondatabase/serverless` — Database ORM
 - `nanoid` — Short ID generation (invite codes, record IDs)
+- `ai` + `@ai-sdk/anthropic` — Vercel AI SDK v6 + Anthropic provider (Keeper summaries)
 
 ## Session Continuity / Progress Tracker
 
@@ -179,14 +198,41 @@ Before testing end-to-end:
 2. Create Neon database — set `DATABASE_URL` in `.env.local`, then run `pnpm db:push`
 3. Get a devnet RPC — set `NEXT_PUBLIC_SOLANA_RPC_URL` (Helius free tier recommended)
 4. Generate server keypair — `solana-keygen new -o server-wallet.json`, fund with `solana airdrop 5`
+5. Set `ANTHROPIC_API_KEY` in `.env.local` (for AI Keeper summaries)
 
-### Next: Phase 2 — Proposals + Voting + Treasury
+### Schema migration: DONE
 
-Phase 2 milestones (not yet planned in detail):
-1. Treasury view — show War Chest balance (USDC on devnet), devnet airdrop button
-2. Proposal creation — form + POST /api/proposals/create (CreateProposal + InsertTransaction + SignOffProposal instructions)
-3. Voting — VotePanel component + POST /api/proposals/vote (CastVote instruction)
-4. Vote finalization — FinalizeVote instruction + result display
-5. Manual execution — "Execute Order" button (ExecuteTransaction instruction)
-6. Threaded discussion — comments with reactions (Postgres-only, no on-chain chat)
-7. AI Keeper — Vercel AI SDK agent for discussion summaries
+Phase 2 schema changes pushed to Neon via `pnpm db:push`:
+- New `votes` table (`id, proposal_id, member_id, choice, created_at`)
+- New columns on `proposals`: `type` (varchar), `ai_summary` (text), `ai_summary_updated_at` (timestamp)
+
+### Phase 2: Proposals + Voting + Treasury (Days 4-10)
+
+- [x] **M1: Schema Changes + Proposal Creation API** — Added `votes` table, `type`/`aiSummary`/`aiSummaryUpdatedAt` columns to proposals, POST /api/proposals/create, GET /api/proposals (list with tallies)
+- [x] **M2: Proposal UI — Form + List + Detail Page** — /community/[id]/proposals/new (creation form with type selector), /community/[id]/proposals (list), /community/[id]/proposals/[proposalId] (detail page), ProposalCard component, updated dashboard with proposals + treasury sections + navigation
+- [x] **M3: Voting — Cast + Tally + Display** — POST /api/proposals/vote (upsert, validation), GET /api/proposals/[id]/tally (with auto-finalize), VotePanel component (Support/Oppose/Abstain buttons, progress bars, quorum line, countdown timer, polling)
+- [x] **M4: Discussion Threads — Comments + Reactions** — POST/GET /api/comments, POST /api/comments/[id]/react (toggle reactions ⚔️🛡️🤔❤️), CouncilThread component (threaded comments, inline replies, polling), CommentInput component
+- [x] **M5: Treasury View — War Chest** — GET /api/treasury/[communityId] (SOL + USDC balance), WarChest component, /community/[id]/treasury page (balance + tx history + faucet instructions), scripts/airdrop-devnet.ts
+- [x] **M6: Finalize + Execute** — POST /api/proposals/[id]/execute (auth check, SOL transfer, state update, tx log), ExecutePanel component (confirmation dialog, explorer link), auto-finalize in tally endpoint
+- [x] **M7: AI Keeper Summaries** — lib/ai/keeper.ts (system prompt + Claude Haiku 4.5), POST /api/ai/summarize (rate-limited, caches in DB), KeeperSummary component (auto-fetch, refresh, AI badge)
+
+**Phase 2 complete.** All 7 milestones done. Voting is Postgres-backed (PRD fallback). Build passes.
+
+**Key decisions:**
+- Voting is Postgres-backed (not on-chain CastVote) per PRD Section 4.3 fallback
+- Proposals go directly to "voting" state (skipping draft/signoff for hackathon speed)
+- Execute uses server wallet SOL transfer (simplified from SPL Governance ExecuteTransaction)
+- AI Keeper uses Claude Haiku 4.5 via Vercel AI SDK v6 for cost efficiency
+
+**Build fixes applied:**
+- Added `turbopack: {}` to `next.config.ts` (Next.js 16 requires explicit turbopack config when webpack config exists)
+- Installed `bn.js` as direct dependency (was missing, used by realm routes)
+
+### Next: Phase 3 — Polish + Demo Prep
+
+Potential tasks:
+1. Add community layout with persistent nav bar / breadcrumbs
+2. Shorten voting period for demo (e.g. 5 minutes)
+3. Seed script for demo data
+4. README for hackathon submission
+5. Stretch: client-side Privy wallet signing for on-chain CastVote

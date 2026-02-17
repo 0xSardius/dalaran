@@ -60,6 +60,7 @@ export const proposals = pgTable("proposals", {
     .references(() => communities.id),
   title: varchar("title", { length: 200 }).notNull(),
   description: text("description").notNull().default(""),
+  type: varchar("type", { length: 20 }).notNull().default("general"), // funding | policy | general
   amount: decimal("amount", { precision: 18, scale: 6 }),
   recipientAddress: text("recipient_address"),
   proposalPubkey: text("proposal_pubkey"),
@@ -68,6 +69,24 @@ export const proposals = pgTable("proposals", {
   createdBy: text("created_by").notNull(), // member id
   createdAt: timestamp("created_at").notNull().defaultNow(),
   votingEndsAt: timestamp("voting_ends_at"),
+  aiSummary: text("ai_summary"),
+  aiSummaryUpdatedAt: timestamp("ai_summary_updated_at"),
+});
+
+// ── Votes ──────────────────────────────────────────────────
+
+export const votes = pgTable("votes", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  proposalId: text("proposal_id")
+    .notNull()
+    .references(() => proposals.id),
+  memberId: text("member_id")
+    .notNull()
+    .references(() => members.id),
+  choice: varchar("choice", { length: 10 }).notNull(), // yes | no | abstain
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 // ── Comments (threaded) ─────────────────────────────────────
