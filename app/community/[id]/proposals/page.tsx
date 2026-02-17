@@ -61,19 +61,11 @@ export default async function ProposalsListPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen px-4 py-12 max-w-4xl mx-auto">
+    <div className="px-4 py-8 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8">
-        <div>
-          <Link
-            href={`/community/${id}`}
-            className="text-sm text-muted-foreground hover:text-parchment"
-          >
-            &larr; {community.name}
-          </Link>
-          <h1 className="fantasy text-3xl font-bold text-gold mt-1">
-            Proposals
-          </h1>
-        </div>
+        <h1 className="fantasy text-3xl font-bold text-gold">
+          Proposals
+        </h1>
         <Link href={`/community/${id}/proposals/new`}>
           <Button>New Proposal</Button>
         </Link>

@@ -33,13 +33,7 @@ export default async function TreasuryPage({ params }: Props) {
   });
 
   return (
-    <div className="min-h-screen px-4 py-12 max-w-3xl mx-auto">
-      <Link
-        href={`/community/${id}`}
-        className="text-sm text-muted-foreground hover:text-parchment mb-6 inline-block"
-      >
-        &larr; {community.name}
-      </Link>
+    <div className="px-4 py-8 max-w-3xl mx-auto">
 
       <div className="mb-6">
         <WarChest communityId={id} />

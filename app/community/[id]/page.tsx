@@ -78,29 +78,14 @@ export default async function CommunityDashboardPage({ params }: Props) {
   const inviteUrl = `/invite/${community.inviteCode}`;
 
   return (
-    <div className="min-h-screen px-4 py-12 max-w-4xl mx-auto">
+    <div className="px-4 py-8 max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="fantasy text-4xl font-bold text-gold mb-2">
+        <h1 className="fantasy text-3xl font-bold text-gold mb-2">
           {community.name}
         </h1>
         {community.description && (
           <p className="text-parchment-dark">{community.description}</p>
         )}
-        {/* Navigation */}
-        <div className="flex gap-4 mt-4">
-          <Link
-            href={`/community/${id}/proposals`}
-            className="text-sm text-gold hover:text-gold-light transition-colors"
-          >
-            Proposals
-          </Link>
-          <Link
-            href={`/community/${id}/treasury`}
-            className="text-sm text-gold hover:text-gold-light transition-colors"
-          >
-            Treasury
-          </Link>
-        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">

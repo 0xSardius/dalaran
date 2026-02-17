@@ -68,13 +68,7 @@ export default async function ProposalDetailPage({ params }: Props) {
   const stateStyle = STATE_STYLES[proposal.state] || STATE_STYLES.draft;
 
   return (
-    <div className="min-h-screen px-4 py-12 max-w-3xl mx-auto">
-      <Link
-        href={`/community/${communityId}/proposals`}
-        className="text-sm text-muted-foreground hover:text-parchment mb-6 inline-block"
-      >
-        &larr; Back to proposals
-      </Link>
+    <div className="px-4 py-8 max-w-3xl mx-auto">
 
       {/* Proposal header */}
       <Card className="mb-6">

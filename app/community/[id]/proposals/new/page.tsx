@@ -98,14 +98,7 @@ export default function CreateProposalPage() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-12 max-w-2xl mx-auto">
-      <button
-        onClick={() => router.push(`/community/${communityId}/proposals`)}
-        className="text-sm text-muted-foreground hover:text-parchment mb-6 inline-block"
-      >
-        &larr; Back to proposals
-      </button>
-
+    <div className="px-4 py-8 max-w-2xl mx-auto">
       <Card>
         <CardHeader>
           <CardTitle className="fantasy text-2xl text-gold text-center">
