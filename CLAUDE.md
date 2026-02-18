@@ -228,11 +228,18 @@ Phase 2 schema changes pushed to Neon via `pnpm db:push`:
 - Added `turbopack: {}` to `next.config.ts` (Next.js 16 requires explicit turbopack config when webpack config exists)
 - Installed `bn.js` as direct dependency (was missing, used by realm routes)
 
-### Next: Phase 3 — Polish + Demo Prep
+### Phase 3: Polish + Demo Prep
+
+- [x] **Community layout + nav bar** — layout.tsx with CommunityNav (Dashboard/Proposals/Treasury tabs, active highlighting), removed duplicate back-links from child pages
+- [x] **Demo mode + seed script** — `NEXT_PUBLIC_DEMO_MODE=true` shortens voting to 5 minutes, `pnpm seed` populates community with 5 members, 3 proposals (active/passed/defeated), votes, threaded comments with reactions
+- [x] **Hackathon README** — Architecture, setup, demo flow, track alignment, .env.example
+
+**Phase 3 complete.**
+
+### Next: Phase 4 — Stretch Goals
 
 Potential tasks:
-1. Add community layout with persistent nav bar / breadcrumbs
-2. Shorten voting period for demo (e.g. 5 minutes)
-3. Seed script for demo data
-4. README for hackathon submission
-5. Stretch: client-side Privy wallet signing for on-chain CastVote
+1. Stretch: client-side Privy wallet signing for on-chain CastVote
+2. End-to-end testing of full demo flow
+3. 3-minute demo video walkthrough
+4. Vercel deployment
