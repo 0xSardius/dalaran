@@ -15,8 +15,10 @@ import * as schema from "../lib/db/schema";
 import * as dotenv from "dotenv";
 import path from "path";
 
-// Load .env.local
-dotenv.config({ path: path.join(process.cwd(), ".env.local") });
+// Load env files — .env.local first, then .env fills in missing values
+// override: true needed because dotenv v17 auto-preloads .env.local (possibly with empty values)
+dotenv.config({ path: path.join(process.cwd(), ".env.local"), override: true });
+dotenv.config({ path: path.join(process.cwd(), ".env"), override: true });
 
 async function main() {
   const databaseUrl = process.env.DATABASE_URL;
