@@ -86,10 +86,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate voting end time
+    // In demo mode, allow short voting periods (in minutes)
     const votingEndsAt = new Date();
-    votingEndsAt.setHours(
-      votingEndsAt.getHours() + community.votingPeriodHours
-    );
+    const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+    if (demoMode) {
+      // 5-minute voting period for demos
+      votingEndsAt.setMinutes(votingEndsAt.getMinutes() + 5);
+    } else {
+      votingEndsAt.setHours(
+        votingEndsAt.getHours() + community.votingPeriodHours
+      );
+    }
 
     // Create proposal — goes directly to "voting" state for hackathon
     const [proposal] = await db
