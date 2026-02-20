@@ -49,6 +49,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // On-chain realm name gets a short suffix to avoid PDA collisions on devnet
+    const realmName = `${name}-${nanoid(4)}`;
+
     const connection = getConnection();
     const serverKeypair = getServerKeypair();
 
@@ -85,7 +88,7 @@ export async function POST(request: NextRequest) {
     const governance = new SplGovernance(connection);
 
     const createRealmIx = await governance.createRealmInstruction(
-      name,
+      realmName,
       communityMintKeypair.publicKey,
       new BN(1), // minCommunityWeightToCreateGovernance = 1 token
       serverKeypair.publicKey, // payer
@@ -98,7 +101,7 @@ export async function POST(request: NextRequest) {
     tx.add(createRealmIx);
 
     // 5. Send transaction
-    const realmPubkey = governance.pda.realmAccount({ name }).publicKey;
+    const realmPubkey = governance.pda.realmAccount({ name: realmName }).publicKey;
 
     const signature = await sendAndConfirmTransaction(connection, tx, [
       serverKeypair,
