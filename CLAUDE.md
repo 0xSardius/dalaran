@@ -236,10 +236,20 @@ Phase 2 schema changes pushed to Neon via `pnpm db:push`:
 
 **Phase 3 complete.**
 
-### Next: Phase 4 — Stretch Goals
+### Bug Fixes Applied (Phase 3.5)
 
-Potential tasks:
-1. Stretch: client-side Privy wallet signing for on-chain CastVote
-2. End-to-end testing of full demo flow
-3. 3-minute demo video walkthrough
-4. Vercel deployment
+- [x] **Realm PDA collision fix** — Append `nanoid(4)` suffix to on-chain realm name to avoid PDA collisions on devnet
+- [x] **Signature verification fix** — SPL Governance requires `governingTokenOwner` to sign deposit instruction. Server wallet is now the on-chain governing token owner for all deposits (voting is Postgres-backed, so on-chain ownership is cosmetic). Also use idempotent ATA creation in join route.
+
+### Next: Phase 4 — Ship + Polish
+
+**Priority order:**
+1. [ ] End-to-end testing of full demo flow (create → invite → join → propose → vote → discuss → execute → treasury)
+2. [ ] Fix server-wallet.ts to support env-var-based keypair for Vercel deployment
+3. [ ] Vercel deployment with all environment variables
+4. [ ] Dashboard layout polish — Reorganize community dashboard to match designer wireframes: "story so far" banner, open votes as cards, treasury summary at a glance
+5. [ ] Creation form enhancements — Add community type selector (mutual aid / investment collective / artist collective / cooperative / other), primary goals field, expected member count, public/private toggle. Store in Postgres `communities` table, display on dashboard.
+6. [ ] 3-minute demo video walkthrough
+7. [ ] Stretch: client-side Privy wallet signing for on-chain CastVote
+
+**Design reference:** Designer's user flows and toolkits are saved in `~/OneDrive/Pictures/web3/Dalaran/`. Toolkits (Treasury, Decision-Making, Membership, Communication, Transparency, Conflict Resolution, Legal & Compliance, Reputation, Coordination) are post-hackathon scope for Commune.
