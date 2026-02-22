@@ -282,22 +282,24 @@ async function mintAndDepositGovernanceToken(
     createMintToInstruction,
   } = await import("@solana/spl-token");
 
-  // Get or create the ATA for the owner
-  const ata = await getAssociatedTokenAddress(mintPubkey, ownerPubkey);
+  // Create ATA owned by SERVER so it can sign the transfer.
+  // The ownerPubkey is set as governing token owner in the Realm (can vote),
+  // but doesn't need to sign the deposit transaction.
+  const ata = await getAssociatedTokenAddress(mintPubkey, serverKeypair.publicKey);
 
   const tx = new Transaction();
 
-  // Create ATA
+  // Create ATA for server
   tx.add(
     createAssociatedTokenAccountInstruction(
       serverKeypair.publicKey, // payer
       ata,
-      ownerPubkey,
+      serverKeypair.publicKey, // ATA owner = server
       mintPubkey
     )
   );
 
-  // Mint 1 token to the ATA
+  // Mint 1 token to the server's ATA
   tx.add(
     createMintToInstruction(
       mintPubkey,
@@ -308,14 +310,16 @@ async function mintAndDepositGovernanceToken(
   );
 
   // Deposit the governing token into the Realm
-  // governingTokenSourceAccount = mint (we use MintAccount approach)
-  // When source is a mint, the authority should be the mint authority
+  // SPL Governance requires governingTokenOwner to SIGN the deposit instruction.
+  // Since we don't have the user's Privy wallet private key on the server,
+  // we use the server wallet as the on-chain governing token owner.
+  // Voting is Postgres-backed for the hackathon, so on-chain ownership is cosmetic.
   const depositIx = await governance.depositGoverningTokensInstruction(
     realmPubkey,
     mintPubkey,
-    ata, // token source (the ATA we just funded)
-    ownerPubkey, // governing token owner
-    serverKeypair.publicKey, // source authority (ATA owner would be ownerPubkey, but we use server for transfer)
+    ata, // token source (server's ATA)
+    serverKeypair.publicKey, // governing token owner = server (must sign)
+    serverKeypair.publicKey, // transfer authority (server owns the ATA)
     serverKeypair.publicKey, // payer
     new BN(1)
   );
@@ -326,10 +330,11 @@ async function mintAndDepositGovernanceToken(
     serverKeypair,
   ]);
 
+  // Store the on-chain TokenOwnerRecord PDA (server is the on-chain owner)
   const tokenOwnerRecordPubkey = governance.pda.tokenOwnerRecordAccount({
     realmAccount: realmPubkey,
     governingTokenMintAccount: mintPubkey,
-    governingTokenOwner: ownerPubkey,
+    governingTokenOwner: serverKeypair.publicKey,
   }).publicKey;
 
   return { signature, tokenOwnerRecordPubkey };

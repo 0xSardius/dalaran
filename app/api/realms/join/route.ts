@@ -5,7 +5,7 @@ import {
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import {
-  createAssociatedTokenAccountInstruction,
+  createAssociatedTokenAccountIdempotentInstruction,
   getAssociatedTokenAddress,
   createMintToInstruction,
 } from "@solana/spl-token";
@@ -88,22 +88,23 @@ export async function POST(request: NextRequest) {
     const communityMint = new PublicKey(community.communityMint);
     const memberPubkey = new PublicKey(authUser.solanaAddress);
 
-    // Create ATA for the new member
-    const ata = await getAssociatedTokenAddress(communityMint, memberPubkey);
+    // Create ATA owned by SERVER so it can sign the deposit transfer.
+    // memberPubkey is set as governing token owner in the Realm (can vote).
+    const ata = await getAssociatedTokenAddress(communityMint, serverKeypair.publicKey);
 
     const tx = new Transaction();
 
-    // Create ATA (server pays)
+    // Create ATA for server (idempotent — already exists after first member joins)
     tx.add(
-      createAssociatedTokenAccountInstruction(
+      createAssociatedTokenAccountIdempotentInstruction(
         serverKeypair.publicKey, // payer
         ata,
-        memberPubkey,
+        serverKeypair.publicKey, // ATA owner = server
         communityMint
       )
     );
 
-    // Mint 1 community token to the ATA
+    // Mint 1 community token to the server's ATA
     tx.add(
       createMintToInstruction(
         communityMint,
@@ -114,12 +115,14 @@ export async function POST(request: NextRequest) {
     );
 
     // Deposit the governing token into the Realm
+    // SPL Governance requires governingTokenOwner to SIGN the deposit.
+    // Server wallet is the on-chain owner; voting is Postgres-backed.
     const depositIx = await governance.depositGoverningTokensInstruction(
       realmPubkey,
       communityMint,
-      ata, // token source
-      memberPubkey, // governing token owner
-      serverKeypair.publicKey, // source authority (server created ATA, but token owner is memberPubkey — however for transfer we need the ATA owner's authority. Since server is payer and the ATA belongs to memberPubkey, we mint directly and use the mint authority approach)
+      ata, // token source (server's ATA)
+      serverKeypair.publicKey, // governing token owner = server (must sign)
+      serverKeypair.publicKey, // transfer authority (server owns the ATA)
       serverKeypair.publicKey, // payer
       new BN(1)
     );
@@ -130,11 +133,11 @@ export async function POST(request: NextRequest) {
       serverKeypair,
     ]);
 
-    // 6. Derive TokenOwnerRecord PDA
+    // 6. Derive TokenOwnerRecord PDA (server is on-chain owner)
     const tokenOwnerRecordPubkey = governance.pda.tokenOwnerRecordAccount({
       realmAccount: realmPubkey,
       governingTokenMintAccount: communityMint,
-      governingTokenOwner: memberPubkey,
+      governingTokenOwner: serverKeypair.publicKey,
     }).publicKey;
 
     // 7. Store member in Postgres
