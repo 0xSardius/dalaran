@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/warcraftcn/button";
 
 export function CopyInviteLink({ inviteUrl }: { inviteUrl: string }) {
   const [copied, setCopied] = useState(false);
+  const [fullUrl, setFullUrl] = useState(inviteUrl);
 
-  const fullUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}${inviteUrl}`
-      : inviteUrl;
+  useEffect(() => {
+    setFullUrl(`${window.location.origin}${inviteUrl}`);
+  }, [inviteUrl]);
 
   async function handleCopy() {
     await navigator.clipboard.writeText(fullUrl);

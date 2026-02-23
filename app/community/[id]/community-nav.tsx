@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/warcraftcn/button";
 
 interface CommunityNavProps {
   communityId: string;
@@ -16,6 +18,7 @@ const NAV_ITEMS = [
 
 export function CommunityNav({ communityId, communityName }: CommunityNavProps) {
   const pathname = usePathname();
+  const { authenticated, logout, user } = useAuth();
   const basePath = `/community/${communityId}`;
 
   function isActive(itemPath: string) {
@@ -36,7 +39,7 @@ export function CommunityNav({ communityId, communityName }: CommunityNavProps) 
             {communityName}
           </Link>
 
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.path}
@@ -50,6 +53,17 @@ export function CommunityNav({ communityId, communityName }: CommunityNavProps) 
                 {item.label}
               </Link>
             ))}
+
+            {authenticated && (
+              <>
+                <span className="ml-3 text-xs text-muted-foreground">
+                  {user?.email?.address ?? ""}
+                </span>
+                <Button variant="frame" onClick={logout}>
+                  Leave
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>

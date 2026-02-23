@@ -44,7 +44,7 @@ export async function generateKeeperSummary(
     .join("\n\n");
 
   const result = await generateText({
-    model: anthropic("claude-sonnet-4-6-20250514"),
+    model: anthropic("claude-sonnet-4-6"),
     system: KEEPER_SYSTEM_PROMPT,
     prompt: `Proposal: "${proposalTitle}"
 Description: ${proposalDescription || "(no description)"}
