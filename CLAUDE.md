@@ -247,9 +247,11 @@ Phase 2 schema changes pushed to Neon via `pnpm db:push`:
 1. [ ] End-to-end testing of full demo flow (create → invite → join → propose → vote → discuss → execute → treasury)
 2. [ ] Fix server-wallet.ts to support env-var-based keypair for Vercel deployment
 3. [ ] Vercel deployment with all environment variables
-4. [ ] Dashboard layout polish — Reorganize community dashboard to match designer wireframes: "story so far" banner, open votes as cards, treasury summary at a glance
-5. [ ] Creation form enhancements — Add community type selector (mutual aid / investment collective / artist collective / cooperative / other), primary goals field, expected member count, public/private toggle. Store in Postgres `communities` table, display on dashboard.
-6. [ ] 3-minute demo video walkthrough
-7. [ ] Stretch: client-side Privy wallet signing for on-chain CastVote
+4. [ ] UI text overflow fixes — Text overrunning card boundaries across proposal cards, comments, and other components. Audit all Card usages and add proper truncation/wrapping (line-clamp, overflow-hidden, break-words).
+5. [ ] VotePanel button styling — Support/Oppose/Abstain buttons are not using warcraftcn Button component. Replace with warcraftcn `<Button variant="frame">` (or appropriate variant) to match the rest of the UI.
+6. [ ] Dashboard layout polish — Reorganize community dashboard to match designer wireframes: "story so far" banner, open votes as cards, treasury summary at a glance
+7. [ ] Creation form enhancements — Add community type selector (mutual aid / investment collective / artist collective / cooperative / other), primary goals field, expected member count, public/private toggle. Store in Postgres `communities` table, display on dashboard.
+8. [ ] 3-minute demo video walkthrough
+9. [ ] Stretch: client-side Privy wallet signing for on-chain CastVote
 
 **Design reference:** Designer's user flows and toolkits are saved in `~/OneDrive/Pictures/web3/Dalaran/`. Toolkits (Treasury, Decision-Making, Membership, Communication, Transparency, Conflict Resolution, Legal & Compliance, Reputation, Coordination) are post-hackathon scope for Commune.
