@@ -13,10 +13,28 @@ let serverKeypair: Keypair | null = null;
  *
  * TRADEOFF: Centralized signing for speed. In production,
  * users would sign with their own embedded wallets.
+ *
+ * Loads from SERVER_WALLET_SECRET env var (JSON array of bytes)
+ * for Vercel, or falls back to file-based loading for local dev.
  */
 export function getServerKeypair(): Keypair {
   if (serverKeypair) return serverKeypair;
 
+  // Prefer env var (works on Vercel serverless)
+  const secretEnv = process.env.SERVER_WALLET_SECRET;
+  if (secretEnv) {
+    try {
+      const secretKey = Uint8Array.from(JSON.parse(secretEnv));
+      serverKeypair = Keypair.fromSecretKey(secretKey);
+      return serverKeypair;
+    } catch {
+      throw new Error(
+        "Failed to parse SERVER_WALLET_SECRET. Must be a JSON array of bytes, e.g. [1,2,3,...]"
+      );
+    }
+  }
+
+  // Fallback: file-based loading (local dev)
   const walletPath =
     process.env.SERVER_WALLET_PATH ||
     path.join(process.cwd(), "server-wallet.json");
@@ -28,8 +46,8 @@ export function getServerKeypair(): Keypair {
     return serverKeypair;
   } catch {
     throw new Error(
-      `Failed to load server wallet from ${walletPath}. ` +
-        `Generate one with: solana-keygen new -o server-wallet.json`
+      `Failed to load server wallet. Set SERVER_WALLET_SECRET env var ` +
+        `or create ${walletPath} with: solana-keygen new -o server-wallet.json`
     );
   }
 }
