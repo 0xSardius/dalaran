@@ -68,7 +68,7 @@ export default async function ProposalDetailPage({ params }: Props) {
   const stateStyle = STATE_STYLES[proposal.state] || STATE_STYLES.draft;
 
   return (
-    <div className="px-4 py-8 max-w-3xl mx-auto">
+    <div className="px-6 py-8 max-w-4xl">
 
       {/* Proposal header */}
       <Card className="mb-6">

@@ -11,14 +11,14 @@ interface CommunityNavProps {
 }
 
 const NAV_ITEMS = [
-  { label: "Dashboard", path: "" },
-  { label: "Proposals", path: "/proposals" },
-  { label: "Treasury", path: "/treasury" },
+  { label: "Dashboard", path: "", icon: "📋" },
+  { label: "Proposals", path: "/proposals", icon: "📜" },
+  { label: "Treasury", path: "/treasury", icon: "💰" },
 ];
 
 export function CommunityNav({ communityId, communityName }: CommunityNavProps) {
   const pathname = usePathname();
-  const { authenticated, logout, user } = useAuth();
+  const { logout, user } = useAuth();
   const basePath = `/community/${communityId}`;
 
   function isActive(itemPath: string) {
@@ -29,44 +29,54 @@ export function CommunityNav({ communityId, communityName }: CommunityNavProps) 
   }
 
   return (
-    <nav className="border-b border-border/50 bg-dark-surface/50">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="flex items-center justify-between h-14">
+    <aside className="fixed left-0 top-0 h-screen w-56 bg-dark-surface border-r border-border/50 flex flex-col z-10">
+      {/* Community name */}
+      <div className="p-4 border-b border-border/50">
+        <Link
+          href={basePath}
+          className="fantasy text-lg text-gold hover:text-gold-light transition-colors block truncate"
+        >
+          {communityName}
+        </Link>
+      </div>
+
+      {/* Nav links */}
+      <nav className="flex-1 p-3 space-y-1">
+        {NAV_ITEMS.map((item) => (
           <Link
-            href={basePath}
-            className="fantasy text-lg text-gold hover:text-gold-light transition-colors"
+            key={item.path}
+            href={`${basePath}${item.path}`}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors ${
+              isActive(item.path)
+                ? "bg-gold/15 text-gold"
+                : "text-muted-foreground hover:text-parchment hover:bg-dark-lighter"
+            }`}
           >
-            {communityName}
+            <span>{item.icon}</span>
+            {item.label}
           </Link>
+        ))}
+      </nav>
 
-          <div className="flex items-center gap-1">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.path}
-                href={`${basePath}${item.path}`}
-                className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-                  isActive(item.path)
-                    ? "bg-gold/15 text-gold"
-                    : "text-muted-foreground hover:text-parchment hover:bg-dark-lighter"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-
-            {authenticated && (
-              <>
-                <span className="ml-3 text-xs text-muted-foreground">
-                  {user?.email?.address ?? ""}
-                </span>
-                <Button variant="frame" onClick={logout}>
-                  Leave
-                </Button>
-              </>
-            )}
-          </div>
+      {/* User + logout at bottom */}
+      <div className="p-3 border-t border-border/50 space-y-2">
+        <div className="text-xs text-muted-foreground truncate px-1">
+          {user?.email?.address ?? ""}
+        </div>
+        <div className="flex gap-2">
+          <Link
+            href="/"
+            className="flex-1"
+          >
+            <Button variant="frame" className="w-full text-xs">
+              Home
+            </Button>
+          </Link>
+          <Button variant="frame" className="flex-1 text-xs" onClick={() => logout()}>
+            Logout
+          </Button>
         </div>
       </div>
-    </nav>
+    </aside>
   );
 }

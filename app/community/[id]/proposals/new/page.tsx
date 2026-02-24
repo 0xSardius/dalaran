@@ -98,7 +98,7 @@ export default function CreateProposalPage() {
   }
 
   return (
-    <div className="px-4 py-8 max-w-2xl mx-auto">
+    <div className="px-6 py-8 max-w-2xl">
       <Card>
         <CardHeader>
           <CardTitle className="fantasy text-2xl text-gold text-center">

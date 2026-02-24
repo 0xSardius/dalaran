@@ -78,7 +78,7 @@ export default async function CommunityDashboardPage({ params }: Props) {
   const inviteUrl = `/invite/${community.inviteCode}`;
 
   return (
-    <div className="px-4 py-8 max-w-4xl mx-auto">
+    <div className="px-6 py-8 max-w-5xl">
       <div className="mb-8">
         <h1 className="fantasy text-3xl font-bold text-gold mb-2">
           {community.name}

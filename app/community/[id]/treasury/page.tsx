@@ -33,7 +33,7 @@ export default async function TreasuryPage({ params }: Props) {
   });
 
   return (
-    <div className="px-4 py-8 max-w-3xl mx-auto">
+    <div className="px-6 py-8 max-w-4xl">
 
       <div className="mb-6">
         <WarChest communityId={id} />

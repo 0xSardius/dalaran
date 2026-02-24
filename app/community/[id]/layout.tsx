@@ -23,7 +23,9 @@ export default async function CommunityLayout({ params, children }: Props) {
   return (
     <div className="min-h-screen">
       <CommunityNav communityId={id} communityName={community.name} />
-      {children}
+      <main className="ml-56">
+        {children}
+      </main>
     </div>
   );
 }
