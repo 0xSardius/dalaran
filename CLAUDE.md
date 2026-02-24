@@ -240,18 +240,45 @@ Phase 2 schema changes pushed to Neon via `pnpm db:push`:
 
 - [x] **Realm PDA collision fix** — Append `nanoid(4)` suffix to on-chain realm name to avoid PDA collisions on devnet
 - [x] **Signature verification fix** — SPL Governance requires `governingTokenOwner` to sign deposit instruction. Server wallet is now the on-chain governing token owner for all deposits (voting is Postgres-backed, so on-chain ownership is cosmetic). Also use idempotent ATA creation in join route.
+- [x] **Keeper AI model fix** — Corrected model ID (was `20251015`, should be `20251001`), then upgraded to `claude-sonnet-4-6`
+- [x] **Env override fix** — Empty `ANTHROPIC_API_KEY=` in `.env.local` was overriding real key in `.env`. Cleaned up `.env.local` to only contain local overrides.
+- [x] **Hydration fix** — `CopyInviteLink` used `window.location.origin` at render time causing SSR/client mismatch. Deferred to `useEffect`.
+- [x] **My Communities on homepage** — Added `GET /api/communities` endpoint + landing page shows user's communities as clickable cards after login.
+- [x] **Sidebar nav** — Replaced top nav bar with fixed left sidebar (w-56) matching designer wireframe. Nav links with icons, user email + Home/Logout at bottom. Updated all community page layouts.
+- [x] **ProposalCard spacing** — Dropped CardHeader (had pt-14), used single CardContent with tuned padding to center content within ornate card frame.
+- [x] **Castle favicon** — Added 🏰 emoji favicon via SVG data URI.
 
 ### Next: Phase 4 — Ship + Polish
 
-**Priority order:**
-1. [ ] End-to-end testing of full demo flow (create → invite → join → propose → vote → discuss → execute → treasury)
+**E2E Testing Status (as of Feb 23):**
+- [x] Create community (on-chain Realm creation)
+- [x] Join via invite link (on-chain token mint + deposit)
+- [x] My Communities list on homepage
+- [x] Create proposal (funding/policy/general)
+- [x] Vote (Support/Oppose/Abstain)
+- [x] Comments + emoji reactions
+- [x] AI Keeper summary (Sonnet 4.6, 5-min cache)
+- [x] Auto-finalize (quorum check + voting period expiry)
+- [x] Treasury page (SOL/USDC balance)
+- [x] Sidebar nav + logout
+- [ ] **Execute a passed funding proposal** — NEXT TO TEST. Need funding proposal that hits 60% quorum, wait for 5-min demo timer, then test Execute button.
+- [ ] Invite link join flow in incognito (second user)
+- [ ] Vote change while voting is open
+
+**Remaining tasks (priority order):**
+1. [ ] Finish e2e testing (execute flow, invite in incognito, vote change)
 2. [ ] Fix server-wallet.ts to support env-var-based keypair for Vercel deployment
 3. [ ] Vercel deployment with all environment variables
-4. [ ] UI text overflow fixes — Text overrunning card boundaries across proposal cards, comments, and other components. Audit all Card usages and add proper truncation/wrapping (line-clamp, overflow-hidden, break-words).
-5. [ ] VotePanel button styling — Support/Oppose/Abstain buttons are not using warcraftcn Button component. Replace with warcraftcn `<Button variant="frame">` (or appropriate variant) to match the rest of the UI.
-6. [ ] Dashboard layout polish — Reorganize community dashboard to match designer wireframes: "story so far" banner, open votes as cards, treasury summary at a glance
-7. [ ] Creation form enhancements — Add community type selector (mutual aid / investment collective / artist collective / cooperative / other), primary goals field, expected member count, public/private toggle. Store in Postgres `communities` table, display on dashboard.
-8. [ ] 3-minute demo video walkthrough
-9. [ ] Stretch: client-side Privy wallet signing for on-chain CastVote
+4. [ ] VotePanel button styling — Support/Oppose/Abstain buttons are not using warcraftcn Button component
+5. [ ] Dashboard layout polish — "story so far" banner, open votes as cards, treasury summary
+6. [ ] Creation form enhancements — community type selector, primary goals, member count, public/private toggle
+7. [ ] 3-minute demo video walkthrough
+8. [ ] Stretch: client-side Privy wallet signing for on-chain CastVote
+
+**Environment notes:**
+- `NEXT_PUBLIC_DEMO_MODE=true` is set in `.env.local` (5-min voting periods)
+- `.env` has all real secrets (Privy, Neon, Anthropic, Solana RPC) — both files are gitignored
+- Server wallet pubkey: `C6u9qPooEcgbTVAWpsyVjWv3HMpvJEtJSodWxq58j9gh`
+- Proposals created BEFORE demo mode was enabled still have 72h voting periods
 
 **Design reference:** Designer's user flows and toolkits are saved in `~/OneDrive/Pictures/web3/Dalaran/`. Toolkits (Treasury, Decision-Making, Membership, Communication, Transparency, Conflict Resolution, Legal & Compliance, Reputation, Coordination) are post-hackathon scope for Commune.
