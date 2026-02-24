@@ -2,8 +2,6 @@ import Link from "next/link";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/warcraftcn/card";
 import { Badge } from "@/components/ui/warcraftcn/badge";
 
@@ -60,11 +58,12 @@ export function ProposalCard({
   return (
     <Link href={`/community/${communityId}/proposals/${id}`}>
       <Card className="hover:border-gold/50 transition-colors cursor-pointer">
-        <CardHeader className="pb-2">
-          <div className="flex items-start justify-between gap-2">
-            <CardTitle className="text-base text-parchment leading-snug">
+        <CardContent className="pt-10 pb-6 pl-8 pr-12">
+          {/* Title + badges */}
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <h3 className="text-base text-parchment leading-snug font-medium break-words min-w-0">
               {title}
-            </CardTitle>
+            </h3>
             <div className="flex gap-1.5 shrink-0">
               <Badge size="sm" variant="outline">
                 {TYPE_LABELS[type] || type}
@@ -74,17 +73,16 @@ export function ProposalCard({
               </Badge>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
+
           {type === "funding" && amount && (
-            <p className="text-gold font-medium mb-2">
+            <p className="text-gold font-medium text-sm mb-2">
               {parseFloat(amount).toFixed(3)} SOL
             </p>
           )}
 
           {/* Vote progress bar */}
           {totalVotes > 0 && (
-            <div className="mb-2">
+            <div className="mb-3">
               <div className="flex justify-between text-xs text-muted-foreground mb-1">
                 <span>Support: {approvalPct}%</span>
                 <span>{totalVotes} vote{totalVotes !== 1 ? "s" : ""}</span>
@@ -98,13 +96,14 @@ export function ProposalCard({
             </div>
           )}
 
+          {/* Footer metadata */}
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>by {createdByEmail}</span>
+            <span className="truncate mr-2">by {createdByEmail}</span>
             {state === "voting" && timeRemaining && (
-              <span>{timeRemaining}</span>
+              <span className="shrink-0">{timeRemaining}</span>
             )}
             {state !== "voting" && (
-              <span>
+              <span className="shrink-0">
                 {new Date(createdAt).toLocaleDateString()}
               </span>
             )}
