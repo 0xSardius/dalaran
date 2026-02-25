@@ -37,10 +37,14 @@ export async function POST(request: NextRequest) {
 
     // 2. Parse request body
     const body = await request.json();
-    const { name, description } = body as {
+    const { name, description, quorumPercent: qp, votingPeriodHours: vph } = body as {
       name: string;
       description: string;
+      quorumPercent?: number;
+      votingPeriodHours?: number;
     };
+    const quorumPercent = Math.min(100, Math.max(1, qp || 60));
+    const votingPeriodHours = Math.min(168, Math.max(1, vph || 72));
 
     if (!name || name.length < 2 || name.length > 32) {
       return NextResponse.json(
@@ -132,12 +136,12 @@ export async function POST(request: NextRequest) {
     const governanceSeed = Keypair.generate().publicKey;
     const createGovIx = await governance.createGovernanceInstruction(
       {
-        communityVoteThreshold: { yesVotePercentage: [60] },
+        communityVoteThreshold: { yesVotePercentage: [quorumPercent] },
         minCommunityWeightToCreateProposal: new BN(1),
         minTransactionHoldUpTime: 0,
-        votingBaseTime: 259200, // 72 hours
+        votingBaseTime: votingPeriodHours * 3600,
         communityVoteTipping: { strict: {} },
-        councilVoteThreshold: { yesVotePercentage: [60] },
+        councilVoteThreshold: { yesVotePercentage: [quorumPercent] },
         councilVetoVoteThreshold: { disabled: {} },
         communityVetoVoteThreshold: { disabled: {} },
         councilVoteTipping: { strict: {} },
@@ -190,6 +194,8 @@ export async function POST(request: NextRequest) {
         governancePubkey: governancePubkey.toBase58(),
         treasuryPubkey: treasuryPubkey.toBase58(),
         inviteCode,
+        quorumPercent,
+        votingPeriodHours,
         createdBy: authUser.privyUserId,
       })
       .returning();
