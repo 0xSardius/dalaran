@@ -21,15 +21,19 @@ export function getServerKeypair(): Keypair {
   if (serverKeypair) return serverKeypair;
 
   // Prefer env var (works on Vercel serverless)
+  // Accepts base64-encoded JSON array or raw JSON array
   const secretEnv = process.env.SERVER_WALLET_SECRET;
   if (secretEnv) {
     try {
-      const secretKey = Uint8Array.from(JSON.parse(secretEnv));
+      const json = secretEnv.startsWith("[")
+        ? secretEnv
+        : Buffer.from(secretEnv, "base64").toString("utf-8");
+      const secretKey = Uint8Array.from(JSON.parse(json));
       serverKeypair = Keypair.fromSecretKey(secretKey);
       return serverKeypair;
     } catch {
       throw new Error(
-        "Failed to parse SERVER_WALLET_SECRET. Must be a JSON array of bytes, e.g. [1,2,3,...]"
+        "Failed to parse SERVER_WALLET_SECRET. Use base64-encoded JSON array or raw JSON array [1,2,3,...]"
       );
     }
   }
