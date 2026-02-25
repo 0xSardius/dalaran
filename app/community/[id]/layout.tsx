@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { getDatabase, schema } from "@/lib/db";
 import { CommunityNav } from "./community-nav";
+import { AuthGuard } from "./auth-guard";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -21,11 +22,13 @@ export default async function CommunityLayout({ params, children }: Props) {
   }
 
   return (
-    <div className="min-h-screen">
-      <CommunityNav communityId={id} communityName={community.name} />
-      <main className="ml-56">
-        {children}
-      </main>
-    </div>
+    <AuthGuard>
+      <div className="min-h-screen">
+        <CommunityNav communityId={id} communityName={community.name} />
+        <main className="ml-56">
+          {children}
+        </main>
+      </div>
+    </AuthGuard>
   );
 }
