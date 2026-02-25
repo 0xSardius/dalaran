@@ -108,12 +108,10 @@ export default async function CommunityDashboardPage({ params }: Props) {
 
         {/* Invite Card */}
         <Card>
-          <CardHeader>
-            <CardTitle className="fantasy text-lg text-gold">
+          <CardContent className="flex flex-col items-center justify-center text-center py-6">
+            <h3 className="fantasy text-lg text-gold mb-2">
               Invite Members
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
             <p className="text-sm text-muted-foreground mb-3">
               Share this link to invite members to your council.
             </p>
@@ -127,7 +125,7 @@ export default async function CommunityDashboardPage({ params }: Props) {
             <h2 className="fantasy text-xl text-gold">Recent Proposals</h2>
             <div className="flex gap-2">
               <Link href={`/community/${id}/proposals`}>
-                <Button variant="frame">View All</Button>
+                <Button variant="frame" className="px-6 text-center">View All</Button>
               </Link>
               <Link href={`/community/${id}/proposals/new`}>
                 <Button>New Proposal</Button>

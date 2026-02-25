@@ -72,22 +72,33 @@ export default async function ProposalDetailPage({ params }: Props) {
 
       {/* Proposal header */}
       <Card className="mb-6">
-        <CardHeader>
-          <div className="flex items-start justify-between gap-3">
-            <CardTitle className="fantasy text-2xl text-gold leading-snug">
-              {proposal.title}
-            </CardTitle>
-            <div className="flex gap-1.5 shrink-0">
-              <Badge size="sm" variant="outline">
-                {TYPE_LABELS[proposal.type] || proposal.type}
-              </Badge>
-              <Badge size="sm" variant={stateStyle.variant}>
-                {stateStyle.label}
-              </Badge>
-            </div>
+        <CardContent className="pt-8 pb-6 px-8">
+          {/* Proposed by + date */}
+          <div className="flex items-center gap-3 text-sm text-parchment/70 mb-3">
+            <span>
+              Proposed by {creator?.email || "Community member"}
+            </span>
+            <span>&middot;</span>
+            <span>
+              {new Date(proposal.createdAt).toLocaleDateString()}
+            </span>
           </div>
-        </CardHeader>
-        <CardContent>
+
+          {/* Title */}
+          <h1 className="fantasy text-2xl text-gold leading-snug mb-3">
+            {proposal.title}
+          </h1>
+
+          {/* Badges */}
+          <div className="flex gap-1.5 mb-4">
+            <Badge size="sm" variant="outline">
+              {TYPE_LABELS[proposal.type] || proposal.type}
+            </Badge>
+            <Badge size="sm" variant={stateStyle.variant}>
+              {stateStyle.label}
+            </Badge>
+          </div>
+
           {proposal.description && (
             <p className="text-parchment-dark whitespace-pre-wrap mb-4">
               {proposal.description}
@@ -95,7 +106,7 @@ export default async function ProposalDetailPage({ params }: Props) {
           )}
 
           {proposal.type === "funding" && proposal.amount && (
-            <div className="bg-dark-lighter rounded-lg p-4 mb-4">
+            <div className="bg-dark-lighter rounded-lg p-4">
               <p className="text-sm text-muted-foreground">Requested amount</p>
               <p className="text-2xl font-bold text-gold">
                 {parseFloat(proposal.amount).toFixed(3)} SOL
@@ -107,15 +118,6 @@ export default async function ProposalDetailPage({ params }: Props) {
               )}
             </div>
           )}
-
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span>
-              Proposed by {creator?.email || "Community member"}
-            </span>
-            <span>
-              {new Date(proposal.createdAt).toLocaleDateString()}
-            </span>
-          </div>
         </CardContent>
       </Card>
 

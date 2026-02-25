@@ -18,11 +18,11 @@ export function CopyInviteLink({ inviteUrl }: { inviteUrl: string }) {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <code className="flex-1 bg-dark-lighter rounded px-3 py-2 text-sm text-parchment break-all">
+    <div className="flex flex-col items-center gap-2 w-full">
+      <code className="bg-dark-lighter rounded px-3 py-2 text-xs text-parchment break-all w-full text-center">
         {fullUrl}
       </code>
-      <Button onClick={handleCopy}>
+      <Button onClick={handleCopy} className="px-6">
         {copied ? "Copied!" : "Copy"}
       </Button>
     </div>
