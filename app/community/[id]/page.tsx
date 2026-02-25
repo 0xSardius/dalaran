@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { eq, desc, sql } from "drizzle-orm";
 import { getDatabase, schema } from "@/lib/db";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/warcraftcn/card";
+import { Card, CardContent } from "@/components/ui/warcraftcn/card";
 import { Badge } from "@/components/ui/warcraftcn/badge";
 import { Button } from "@/components/ui/warcraftcn/button";
 import { ProposalCard } from "@/components/proposals/ProposalCard";
@@ -77,38 +77,65 @@ export default async function CommunityDashboardPage({ params }: Props) {
 
   const inviteUrl = `/invite/${community.inviteCode}`;
 
+  // Compute stats
+  const totalProposals = recentProposals.length;
+  const activeVotes = recentProposals.filter((p) => p.state === "voting").length;
+  const passedProposals = recentProposals.filter((p) => p.state === "succeeded" || p.state === "completed").length;
+
   return (
     <div className="px-6 py-8 max-w-5xl">
+      {/* Hero banner */}
       <div className="mb-8">
         <h1 className="fantasy text-3xl font-bold text-gold mb-2">
           {community.name}
         </h1>
         {community.description && (
-          <p className="text-parchment-dark">{community.description}</p>
+          <p className="text-parchment-dark mb-4">{community.description}</p>
         )}
+        <p className="text-sm text-parchment/60 italic">
+          Pool funds, debate proposals, and decide together.
+        </p>
+      </div>
+
+      {/* Stats row */}
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        <Card>
+          <CardContent className="pt-6 pb-4 px-6 text-center">
+            <p className="fantasy text-2xl text-gold">{membersList.length}</p>
+            <p className="text-xs text-muted-foreground">Members</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6 pb-4 px-6 text-center">
+            <p className="fantasy text-2xl text-gold">{activeVotes}</p>
+            <p className="text-xs text-muted-foreground">Active Votes</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6 pb-4 px-6 text-center">
+            <p className="fantasy text-2xl text-gold">{passedProposals}</p>
+            <p className="text-xs text-muted-foreground">Passed</p>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Treasury Summary Card */}
         <Link href={`/community/${id}/treasury`}>
           <Card className="hover:border-gold/50 transition-colors cursor-pointer h-full">
-            <CardHeader>
-              <CardTitle className="fantasy text-lg text-gold">
-                War Chest
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-sm">
+            <CardContent className="pt-8 pb-6 px-8 flex flex-col items-center text-center">
+              <h3 className="fantasy text-lg text-gold mb-2">War Chest</h3>
+              <p className="text-muted-foreground text-sm mb-3">
                 View your community treasury and transaction history.
               </p>
-              <p className="text-xs text-gold mt-2">View treasury &rarr;</p>
+              <span className="text-sm text-gold">View treasury &rarr;</span>
             </CardContent>
           </Card>
         </Link>
 
         {/* Invite Card */}
         <Card>
-          <CardContent className="flex flex-col items-center justify-center text-center py-6">
+          <CardContent className="flex flex-col items-center justify-center text-center pt-8 pb-6 px-8">
             <h3 className="fantasy text-lg text-gold mb-2">
               Invite Members
             </h3>
@@ -134,7 +161,7 @@ export default async function CommunityDashboardPage({ params }: Props) {
           </div>
           {recentProposals.length === 0 ? (
             <Card>
-              <CardContent className="py-8 text-center">
+              <CardContent className="pt-8 pb-6 px-8 text-center">
                 <p className="text-muted-foreground">
                   No proposals yet. Create the first one!
                 </p>
@@ -166,12 +193,10 @@ export default async function CommunityDashboardPage({ params }: Props) {
 
         {/* Members Card */}
         <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="fantasy text-lg text-gold">
+          <CardContent className="pt-8 pb-6 px-8">
+            <h3 className="fantasy text-lg text-gold mb-4">
               Council Members ({membersList.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
             <div className="grid gap-3 sm:grid-cols-2">
               {membersList.map((member) => (
                 <div
