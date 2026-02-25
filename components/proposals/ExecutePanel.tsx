@@ -128,13 +128,14 @@ export function ExecutePanel({
               >
                 {executing ? "Transferring funds..." : "Confirm Transfer"}
               </Button>
-              <button
+              <Button
+                variant="frame"
                 onClick={() => setConfirming(false)}
                 disabled={executing}
-                className="flex-1 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-parchment transition-colors"
+                className="flex-1"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         )}

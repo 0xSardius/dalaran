@@ -164,39 +164,30 @@ export function VotePanel({
         {/* Vote buttons */}
         {canVote && (
           <div className="flex gap-3 mb-4">
-            <button
+            <Button
+              variant={tally.userVote === "yes" ? "default" : "frame"}
               onClick={() => castVote("yes")}
               disabled={voting}
-              className={`flex-1 py-3 rounded-lg border text-sm font-medium transition-colors ${
-                tally.userVote === "yes"
-                  ? "border-gold bg-gold/20 text-gold"
-                  : "border-border bg-dark-surface text-parchment-dark hover:border-gold/50"
-              }`}
+              className="flex-1"
             >
               {tally.userVote === "yes" ? "Supported" : "Support"}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant={tally.userVote === "no" ? "default" : "frame"}
               onClick={() => castVote("no")}
               disabled={voting}
-              className={`flex-1 py-3 rounded-lg border text-sm font-medium transition-colors ${
-                tally.userVote === "no"
-                  ? "border-red-500 bg-red-500/20 text-red-300"
-                  : "border-border bg-dark-surface text-parchment-dark hover:border-red-500/50"
-              }`}
+              className="flex-1"
             >
               {tally.userVote === "no" ? "Opposed" : "Oppose"}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant={tally.userVote === "abstain" ? "default" : "frame"}
               onClick={() => castVote("abstain")}
               disabled={voting}
-              className={`flex-1 py-3 rounded-lg border text-sm font-medium transition-colors ${
-                tally.userVote === "abstain"
-                  ? "border-muted bg-muted/20 text-muted-foreground"
-                  : "border-border bg-dark-surface text-parchment-dark hover:border-muted"
-              }`}
+              className="flex-1"
             >
               Abstain
-            </button>
+            </Button>
           </div>
         )}
 
