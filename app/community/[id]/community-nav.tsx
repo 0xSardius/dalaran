@@ -41,12 +41,12 @@ export function CommunityNav({ communityId, communityName }: CommunityNavProps) 
       </div>
 
       {/* Nav links */}
-      <nav className="flex-1 p-3 space-y-2">
+      <nav className="flex-1 p-3 space-y-1.5">
         {NAV_ITEMS.map((item) => (
-          <Link key={item.path} href={`${basePath}${item.path}`}>
+          <Link key={item.path} href={`${basePath}${item.path}`} className="block">
             <Button
               variant={isActive(item.path) ? "default" : "frame"}
-              className={`w-full justify-start gap-3 text-sm ${
+              className={`w-full px-6 py-3 text-center ${
                 isActive(item.path) ? "text-gold" : ""
               }`}
             >
@@ -62,16 +62,13 @@ export function CommunityNav({ communityId, communityName }: CommunityNavProps) 
         <div className="text-xs text-muted-foreground truncate px-1">
           {user?.email?.address ?? ""}
         </div>
-        <div className="flex gap-2">
-          <Link
-            href="/"
-            className="flex-1"
-          >
-            <Button variant="frame" className="w-full text-xs">
+        <div className="flex gap-1.5">
+          <Link href="/" className="flex-1">
+            <Button variant="frame" className="w-full px-4 py-2 text-center text-xs">
               Home
             </Button>
           </Link>
-          <Button variant="frame" className="flex-1 text-xs" onClick={() => logout()}>
+          <Button variant="frame" className="flex-1 px-4 py-2 text-center text-xs" onClick={() => logout()}>
             Logout
           </Button>
         </div>
