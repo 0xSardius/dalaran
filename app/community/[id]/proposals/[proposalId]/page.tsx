@@ -6,8 +6,6 @@ import { Badge } from "@/components/ui/warcraftcn/badge";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/warcraftcn/card";
 import { VotePanel } from "@/components/proposals/VotePanel";
 import { ExecutePanel } from "@/components/proposals/ExecutePanel";

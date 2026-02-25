@@ -5,8 +5,6 @@ import { usePrivy } from "@privy-io/react-auth";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/warcraftcn/card";
 import { Badge } from "@/components/ui/warcraftcn/badge";
 import { Button } from "@/components/ui/warcraftcn/button";
@@ -66,12 +64,12 @@ export function KeeperSummary({
 
   return (
     <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
+      <CardContent className="pt-8 pb-6 px-8">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <CardTitle className="fantasy text-lg text-gold">
+            <h3 className="fantasy text-lg text-gold">
               Keeper&apos;s Summary
-            </CardTitle>
+            </h3>
             <Badge size="sm" variant="outline">
               AI
             </Badge>
@@ -79,6 +77,7 @@ export function KeeperSummary({
           {authenticated && (
             <Button
               variant="frame"
+              className="px-6 text-center"
               onClick={handleRefresh}
               disabled={loading}
             >
@@ -86,8 +85,6 @@ export function KeeperSummary({
             </Button>
           )}
         </div>
-      </CardHeader>
-      <CardContent>
         {loading && !summary ? (
           <p className="text-sm text-muted-foreground">
             The Keeper is analyzing the discussion...

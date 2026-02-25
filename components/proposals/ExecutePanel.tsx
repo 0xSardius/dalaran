@@ -5,8 +5,6 @@ import { usePrivy } from "@privy-io/react-auth";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/warcraftcn/card";
 import { Button } from "@/components/ui/warcraftcn/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -65,12 +63,10 @@ export function ExecutePanel({
   if (result) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle className="fantasy text-lg text-gold">
+        <CardContent className="pt-8 pb-6 px-8">
+          <h3 className="fantasy text-lg text-gold mb-4">
             Funds Transferred
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
           <div className="bg-dark-lighter rounded-lg p-4">
             <p className="text-sm text-parchment mb-2">
               {parseFloat(amount).toFixed(4)} SOL has been sent to the
@@ -95,12 +91,10 @@ export function ExecutePanel({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="fantasy text-lg text-gold">
+      <CardContent className="pt-8 pb-6 px-8">
+        <h3 className="fantasy text-lg text-gold mb-4">
           Execute Order
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h3>
         <div className="bg-dark-lighter rounded-lg p-4 mb-4">
           <p className="text-sm text-muted-foreground">Transfer</p>
           <p className="text-xl font-bold text-gold">

@@ -58,20 +58,25 @@ export function ProposalCard({
   return (
     <Link href={`/community/${communityId}/proposals/${id}`}>
       <Card className="hover:border-gold/50 transition-colors cursor-pointer">
-        <CardContent className="pt-10 pb-6 pl-8 pr-12">
-          {/* Title + badges */}
-          <div className="flex items-start justify-between gap-3 mb-3">
-            <h3 className="text-base text-parchment leading-snug font-medium break-words min-w-0">
-              {title}
-            </h3>
-            <div className="flex gap-1.5 shrink-0">
-              <Badge size="sm" variant="outline">
-                {TYPE_LABELS[type] || type}
-              </Badge>
-              <Badge size="sm" variant={stateStyle.variant}>
-                {stateStyle.label}
-              </Badge>
-            </div>
+        <CardContent className="pt-8 pb-6 px-8">
+          {/* Proposed by */}
+          <p className="text-xs text-parchment/70 mb-2">
+            by {createdByEmail}
+          </p>
+
+          {/* Title */}
+          <h3 className="text-base text-parchment leading-snug font-medium break-words mb-2">
+            {title}
+          </h3>
+
+          {/* Badges */}
+          <div className="flex gap-1.5 mb-3">
+            <Badge size="sm" variant="outline">
+              {TYPE_LABELS[type] || type}
+            </Badge>
+            <Badge size="sm" variant={stateStyle.variant}>
+              {stateStyle.label}
+            </Badge>
           </div>
 
           {type === "funding" && amount && (
@@ -96,16 +101,13 @@ export function ProposalCard({
             </div>
           )}
 
-          {/* Footer metadata */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span className="truncate mr-2">by {createdByEmail}</span>
+          {/* Time remaining / date */}
+          <div className="text-xs text-muted-foreground">
             {state === "voting" && timeRemaining && (
-              <span className="shrink-0">{timeRemaining}</span>
+              <span>{timeRemaining}</span>
             )}
             {state !== "voting" && (
-              <span className="shrink-0">
-                {new Date(createdAt).toLocaleDateString()}
-              </span>
+              <span>{new Date(createdAt).toLocaleDateString()}</span>
             )}
           </div>
         </CardContent>

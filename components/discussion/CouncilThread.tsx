@@ -5,8 +5,6 @@ import { usePrivy } from "@privy-io/react-auth";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/warcraftcn/card";
 import { Badge } from "@/components/ui/warcraftcn/badge";
 import { useAuth } from "@/hooks/use-auth";
@@ -109,12 +107,10 @@ export function CouncilThread({ proposalId, communityId }: CouncilThreadProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="fantasy text-lg text-gold">
+      <CardContent className="pt-8 pb-6 px-8">
+        <h3 className="fantasy text-lg text-gold mb-4">
           Discussion ({comments.length})
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h3>
         {/* Comments list */}
         <div className="space-y-4 mb-6">
           {topLevel.length === 0 && (

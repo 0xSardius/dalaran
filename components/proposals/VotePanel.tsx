@@ -5,8 +5,6 @@ import { usePrivy } from "@privy-io/react-auth";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/warcraftcn/card";
 import { Button } from "@/components/ui/warcraftcn/button";
 import { Badge } from "@/components/ui/warcraftcn/badge";
@@ -145,24 +143,24 @@ export function VotePanel({
 
   return (
     <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="fantasy text-lg text-gold">Vote</CardTitle>
-          {tally.state === "succeeded" && (
-            <Badge variant="secondary">Passed</Badge>
-          )}
-          {tally.state === "defeated" && (
-            <Badge variant="destructive">Failed</Badge>
-          )}
-          {tally.state === "completed" && (
-            <Badge variant="outline">Executed</Badge>
-          )}
-          {isVoting && (
-            <span className="text-sm text-muted-foreground">{timeLeft}</span>
-          )}
+      <CardContent className="pt-8 pb-6 px-8">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="fantasy text-lg text-gold">Vote</h3>
+          <div className="flex items-center gap-2">
+            {tally.state === "succeeded" && (
+              <Badge variant="secondary">Passed</Badge>
+            )}
+            {tally.state === "defeated" && (
+              <Badge variant="destructive">Failed</Badge>
+            )}
+            {tally.state === "completed" && (
+              <Badge variant="outline">Executed</Badge>
+            )}
+            {isVoting && (
+              <span className="text-sm text-muted-foreground">{timeLeft}</span>
+            )}
+          </div>
         </div>
-      </CardHeader>
-      <CardContent>
         {/* Vote buttons */}
         {canVote && (
           <div className="flex gap-3 mb-4">
@@ -262,3 +260,4 @@ export function VotePanel({
     </Card>
   );
 }
+
