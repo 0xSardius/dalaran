@@ -70,13 +70,13 @@ export default function Home() {
       {/* Hero */}
       <section className="flex-1 flex flex-col items-center justify-center px-4 py-16">
         <div className="text-center max-w-2xl w-full">
-          <p className="text-sm text-gold/70 tracking-widest uppercase mb-4">
+          <p className="fantasy text-sm text-gold/70 tracking-widest uppercase mb-4">
             Collective Treasury & Governance
           </p>
           <h1 className="fantasy text-6xl md:text-7xl font-bold text-gold mb-6">
             Dalaran
           </h1>
-          <p className="text-lg text-parchment-dark max-w-lg mx-auto mb-8 leading-relaxed">
+          <p className="fantasy text-lg text-parchment-dark max-w-lg mx-auto mb-8 leading-relaxed">
             Pool funds, debate proposals, and vote on how your community
             spends its money. No crypto knowledge required.
           </p>
@@ -115,7 +115,7 @@ export default function Home() {
 
             {authenticated && !loading && (
               <Link href="/create">
-                <Button variant="frame" className="px-6">
+                <Button variant="frame" className="px-6 text-center">
                   {communities.length > 0
                     ? "Create Another Community"
                     : "Create a Community"}
@@ -140,7 +140,7 @@ export default function Home() {
                   <h3 className="fantasy text-lg text-gold mb-2">
                     {pillar.title}
                   </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="fantasy text-xs text-muted-foreground leading-relaxed">
                     {pillar.description}
                   </p>
                 </CardContent>
@@ -152,7 +152,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="py-6 text-center border-t border-border/30">
-        <p className="text-xs text-muted-foreground">
+        <p className="fantasy text-xs text-muted-foreground">
           Built on Realms. Powered by Solana. Usable by everyone.
         </p>
       </footer>
