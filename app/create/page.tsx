@@ -82,27 +82,27 @@ export default function CreateCommunityPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-md">
         {/* Back link */}
         <Link
           href="/"
-          className="text-sm text-muted-foreground hover:text-parchment mb-6 inline-block"
+          className="text-sm text-muted-foreground hover:text-parchment mb-4 inline-block"
         >
           &larr; Back to home
         </Link>
 
         <Card>
-          <CardContent className="pt-8 pb-6 px-8">
-            <h1 className="fantasy text-2xl text-gold text-center mb-6">
+          <CardContent className="pt-8 pb-6 px-10">
+            <h1 className="fantasy text-2xl text-gold text-center mb-5">
               Found a New Council
             </h1>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {/* Community Name */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <label
                   htmlFor="name"
-                  className="text-sm font-medium text-parchment"
+                  className="text-xs font-medium text-parchment"
                 >
                   Community Name
                 </label>
@@ -115,15 +115,15 @@ export default function CreateCommunityPage() {
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  2-32 characters. Choose something your members will recognize.
+                  2-32 characters.
                 </p>
               </div>
 
               {/* Description */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <label
                   htmlFor="description"
-                  className="text-sm font-medium text-parchment"
+                  className="text-xs font-medium text-parchment"
                 >
                   Description
                 </label>
@@ -133,29 +133,29 @@ export default function CreateCommunityPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   maxLength={500}
-                  rows={3}
+                  rows={2}
                   className="w-full rounded-md border border-border bg-dark-surface px-3 py-2 text-sm text-parchment placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold/50 resize-none"
                 />
               </div>
 
               {/* Community Type */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-parchment">
-                  Community Type
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-parchment">
+                  Type
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-4 gap-1.5">
                   {COMMUNITY_TYPES.map((ct) => (
                     <button
                       key={ct.value}
                       type="button"
                       onClick={() => setCommunityType(ct.value)}
-                      className={`flex items-center gap-2 px-3 py-2.5 rounded-md border text-sm transition-colors ${
+                      className={`flex flex-col items-center gap-1 px-2 py-2 rounded-md border text-xs transition-colors ${
                         communityType === ct.value
                           ? "border-gold bg-gold/15 text-gold"
                           : "border-border bg-dark-surface text-parchment-dark hover:border-gold/50"
                       }`}
                     >
-                      <span>{ct.icon}</span>
+                      <span className="text-base">{ct.icon}</span>
                       {ct.label}
                     </button>
                   ))}
@@ -163,21 +163,21 @@ export default function CreateCommunityPage() {
               </div>
 
               {/* Governance Settings */}
-              <div className="space-y-4 border-t border-border/50 pt-4">
-                <p className="text-sm font-medium text-parchment">
-                  Governance Settings
+              <div className="space-y-3 border-t border-border/50 pt-3">
+                <p className="text-xs font-medium text-parchment">
+                  Governance
                 </p>
 
                 {/* Quorum */}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <div className="flex items-center justify-between">
                     <label
                       htmlFor="quorum"
                       className="text-xs text-muted-foreground"
                     >
-                      Quorum (% of members needed to vote)
+                      Quorum
                     </label>
-                    <span className="text-sm text-gold fantasy">
+                    <span className="text-xs text-gold fantasy">
                       {quorumPercent}%
                     </span>
                   </div>
@@ -191,21 +191,14 @@ export default function CreateCommunityPage() {
                     onChange={(e) => setQuorumPercent(Number(e.target.value))}
                     className="w-full accent-[#C9A959]"
                   />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>10%</span>
-                    <span>100%</span>
-                  </div>
                 </div>
 
                 {/* Voting Period */}
-                <div className="space-y-2">
-                  <label
-                    htmlFor="votingPeriod"
-                    className="text-xs text-muted-foreground"
-                  >
+                <div className="space-y-1.5">
+                  <label className="text-xs text-muted-foreground">
                     Voting Period
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-1.5">
                     {[
                       { hours: 24, label: "1 Day" },
                       { hours: 72, label: "3 Days" },
@@ -215,7 +208,7 @@ export default function CreateCommunityPage() {
                         key={opt.hours}
                         type="button"
                         onClick={() => setVotingPeriodHours(opt.hours)}
-                        className={`px-3 py-2 rounded-md border text-sm transition-colors ${
+                        className={`px-2 py-1.5 rounded-md border text-xs transition-colors ${
                           votingPeriodHours === opt.hours
                             ? "border-gold bg-gold/15 text-gold"
                             : "border-border bg-dark-surface text-parchment-dark hover:border-gold/50"
@@ -244,7 +237,7 @@ export default function CreateCommunityPage() {
 
               {loading && (
                 <p className="text-xs text-center text-muted-foreground">
-                  Setting up your treasury and governance on Solana. This may take a moment...
+                  Setting up your treasury and governance on Solana...
                 </p>
               )}
             </form>
