@@ -248,37 +248,47 @@ Phase 2 schema changes pushed to Neon via `pnpm db:push`:
 - [x] **ProposalCard spacing** — Dropped CardHeader (had pt-14), used single CardContent with tuned padding to center content within ornate card frame.
 - [x] **Castle favicon** — Added 🏰 emoji favicon via SVG data URI.
 
-### Next: Phase 4 — Ship + Polish
+### Phase 4: Ship + Polish (Day 14)
 
-**E2E Testing Status (as of Feb 23):**
+- [x] **Server wallet env var** — `SERVER_WALLET_SECRET` supports base64-encoded JSON array for Vercel (falls back to file for local dev)
+- [x] **Vercel deployment** — Live at https://dalaran-gold.vercel.app/
+- [x] **Auth guard** — Logged-out users redirected from /community/* routes to /
+- [x] **Card layout fixes (all pages)** — Replaced CardHeader/CardTitle with single CardContent (pt-8 pb-6 px-8) across proposal detail, VotePanel, ExecutePanel, CouncilThread, KeeperSummary, dashboard, treasury
+- [x] **Sidebar nav styling** — warcraftcn Button components with proper padding (px-6 py-3 text-center)
+- [x] **VotePanel buttons** — Support/Oppose/Abstain now use warcraftcn Button (filled when selected, frame when not)
+- [x] **ExecutePanel Cancel button** — Now uses warcraftcn frame Button
+- [x] **Dashboard polish** — Stats row (Members, Active Votes, Passed), tagline, centered War Chest + Invite cards
+- [x] **Landing page redesign** — Four pillars (Pool, Discuss, Decide, Act), larger title, subtitle, footer tagline
+- [x] **Creation form enhancements** — Community type selector, quorum slider (10-100%), voting period picker (1/3/7 days), textarea description, back link. API wired to pass quorum + voting period to on-chain governance config.
+- [x] **Invite card fix** — Stacked URL + Copy button vertically, centered in card
+- [x] **CopyInviteLink fix** — Smaller text, full-width, centered
+
+**Phase 4 complete.**
+
+**E2E Testing Status (as of Feb 25):**
 - [x] Create community (on-chain Realm creation)
 - [x] Join via invite link (on-chain token mint + deposit)
 - [x] My Communities list on homepage
 - [x] Create proposal (funding/policy/general)
 - [x] Vote (Support/Oppose/Abstain)
+- [x] Vote change while voting is open
 - [x] Comments + emoji reactions
 - [x] AI Keeper summary (Sonnet 4.6, 5-min cache)
 - [x] Auto-finalize (quorum check + voting period expiry)
+- [x] Execute a passed funding proposal
 - [x] Treasury page (SOL/USDC balance)
 - [x] Sidebar nav + logout
-- [ ] **Execute a passed funding proposal** — NEXT TO TEST. Need funding proposal that hits 60% quorum, wait for 5-min demo timer, then test Execute button.
-- [ ] Invite link join flow in incognito (second user)
-- [ ] Vote change while voting is open
+- [x] Auth guard (logged-out redirect)
 
-**Remaining tasks (priority order):**
-1. [ ] Finish e2e testing (execute flow, invite in incognito, vote change)
-2. [ ] Fix server-wallet.ts to support env-var-based keypair for Vercel deployment
-3. [ ] Vercel deployment with all environment variables
-4. [ ] VotePanel button styling — Support/Oppose/Abstain buttons are not using warcraftcn Button component
-5. [ ] Dashboard layout polish — "story so far" banner, open votes as cards, treasury summary
-6. [ ] Creation form enhancements — community type selector, primary goals, member count, public/private toggle
-7. [ ] 3-minute demo video walkthrough
-8. [ ] Stretch: client-side Privy wallet signing for on-chain CastVote
+### Remaining: Phase 5 — Submit
 
-**Environment notes:**
-- `NEXT_PUBLIC_DEMO_MODE=true` is set in `.env.local` (5-min voting periods)
-- `.env` has all real secrets (Privy, Neon, Anthropic, Solana RPC) — both files are gitignored
-- Server wallet pubkey: `C6u9qPooEcgbTVAWpsyVjWv3HMpvJEtJSodWxq58j9gh`
-- Proposals created BEFORE demo mode was enabled still have 72h voting periods
+1. [ ] 3-minute demo video walkthrough
+2. [ ] Hackathon submission (Feb 27 deadline)
+3. [ ] Stretch: client-side Privy wallet signing for on-chain CastVote
+
+**Deployment:**
+- **Live URL:** https://dalaran-gold.vercel.app/
+- **Environment:** `SERVER_WALLET_SECRET` is base64-encoded in Vercel, `NEXT_PUBLIC_DEMO_MODE=true` for 5-min voting
+- **Server wallet pubkey:** `C6u9qPooEcgbTVAWpsyVjWv3HMpvJEtJSodWxq58j9gh`
 
 **Design reference:** Designer's user flows and toolkits are saved in `~/OneDrive/Pictures/web3/Dalaran/`. Toolkits (Treasury, Decision-Making, Membership, Communication, Transparency, Conflict Resolution, Legal & Compliance, Reputation, Coordination) are post-hackathon scope for Commune.
