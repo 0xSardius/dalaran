@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/warcraftcn/card";
 
 interface WarChestProps {
@@ -47,10 +45,8 @@ export function WarChest({ communityId }: WarChestProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="fantasy text-2xl text-gold">War Chest</CardTitle>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="pt-8 pb-6 px-8">
+        <h2 className="fantasy text-2xl text-gold mb-4">War Chest</h2>
         <div className="space-y-4">
           {/* Main balance display */}
           <div className="bg-dark-lighter rounded-lg p-6 text-center">

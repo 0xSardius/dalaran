@@ -5,8 +5,6 @@ import { getDatabase, schema } from "@/lib/db";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/warcraftcn/card";
 import { WarChest } from "@/components/treasury/WarChest";
 
@@ -41,12 +39,10 @@ export default async function TreasuryPage({ params }: Props) {
 
       {/* Add funds info */}
       <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="fantasy text-lg text-gold">
+        <CardContent className="pt-8 pb-6 px-8">
+          <h3 className="fantasy text-lg text-gold mb-4">
             Add Funds
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
           <p className="text-sm text-muted-foreground mb-2">
             This treasury is on Solana devnet. To add test funds:
           </p>
@@ -73,12 +69,10 @@ export default async function TreasuryPage({ params }: Props) {
 
       {/* Transaction history */}
       <Card>
-        <CardHeader>
-          <CardTitle className="fantasy text-lg text-gold">
+        <CardContent className="pt-8 pb-6 px-8">
+          <h3 className="fantasy text-lg text-gold mb-4">
             Transaction History
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
           {txHistory.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">
               No transactions yet.
