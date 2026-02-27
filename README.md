@@ -273,7 +273,8 @@ On member join: `CreateATA` → `MintTo` → `DepositGoverningTokens` — mints 
 
 ## Team
 
-Solo builder — [0xSardius](https://github.com/0xSardius)
+Full-Stack Builder — [0xSardius](https://github.com/0xSardius)
+Design Engineer - [0xJulo](https://github.com/0xJulo)
 
 ## License
 
